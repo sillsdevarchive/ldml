@@ -1,0 +1,123 @@
+namespace palaso = "http://www.palaso.org/ldml/0.2"
+
+include "ldml.rnc" {
+	collation = element collation {
+		attlist.collation,
+	   (alias
+		 | (base?,
+			settings?,
+			suppress_contractions?,
+			optimize?,
+			rules?,
+			collation.special*))
+	}
+	ldml = element ldml {
+		attlist.ldml,
+		identity,
+		(alias
+		 | (fallback*,
+			localeDisplayNames?,
+			layout?,
+			characters?,
+			delimiters?,
+			measurement?,
+			dates?,
+			numbers?,
+			units?,
+			listPatterns?,
+			collations?,
+			posix?,
+			segmentations?,
+			rbnf?,
+			references?,
+			ldml.special*))
+	}
+}
+
+
+attlist.collation.special &=
+	attribute palaso:sortRulesType {
+		"simple"
+	  | "preprocessed"
+	}
+
+
+collation.special =
+	element special {
+		attlist.collation.special,
+	   (collation.special.simple
+	  | collation.special.preprocessed)
+	}
+
+collation.special.simple = {
+   simple.rules+
+}
+
+simple.rules =
+	element rules {
+		attlist.rules,
+		(alias
+			| (reset,
+				(reset | p | pc | s | sc | t | tc)*))
+	}
+
+collation.special.preprocess = {
+   (palaso.reorder*,
+	base?,
+	settings?,
+	suppress_contractions?,
+	optimize?,
+	rules?)
+}
+
+palaso.reorder = {
+	element palaso:reorder {
+		attlist.palaso.reorder
+	}
+}
+
+attlist.palaso.reorder &= attribute palaso:match { text }
+attlist.palaso.reorder &= attribute palaso:reorder { text }
+
+ldml.special =
+	element special {
+	   (palaso.fonts?,
+		palaso.kbds?
+		palaso.spellcheck?)
+	}
+
+palaso.spellcheck =
+	element palaso:spellCheckingId {
+		attribute value { xsd:URL }
+	}
+
+palaso.fonts =
+	element palaso:fonts {
+		(palaso.font*)
+	}
+
+palaso.font =
+	element palaso:font {
+		attlist.palaso.font
+	}
+
+attlist.palaso.font &= attribute palaso:name { text }
+attlist.palaso.font &= attribute palaso:url { xsd:URL }
+attlist.palaso.font &= attribute palaso:size { xsd:number }
+attlist.palaso.font &= attribute palaso:minversion { xsd:number }
+
+palaso.kbds =
+	element palaso:keyboards {
+		(palaso.kbd*)
+	}
+
+palaso.kbd =
+	element palaso:keyboard {
+		attlist.palaso.kbd
+	}
+
+attlist.palaso.kbd &= attribute palaso:name { text }
+attlist.palaso.kbd &= attribute palaso:type {
+	"keyman" | "msklc"
+}
+attlist.palaso.kbd &= attribute palaso:url { xsd:URL }

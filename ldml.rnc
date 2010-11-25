@@ -1,0 +1,3355 @@
+# Copyright © 2003-2010 Unicode, Inc. and others. All rights reserved. Distributed under the Terms of Use in http://www.unicode.org/copyright.html.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of the Unicode data files and any associated documentation (the "Data Files") or Unicode software and any associated documentation (the "Software") to deal in the Data Files or Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, and/or sell copies of the Data Files or Software, and to permit persons to whom the Data Files or Software are furnished to do so, provided that (a) the above copyright notice(s) and this permission notice appear with all copies of the Data Files or Software, (b) both the above copyright notice(s) and this permission notice appear in associated documentation, and (c) there is clear notice in each modified Data File or in the Software as well as in the documentation associated with the Data File(s) or Software that the data or software has been modified.
+#
+# THE DATA FILES AND SOFTWARE ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR HOLDERS INCLUDED IN THIS NOTICE BE LIABLE FOR ANY CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THE DATA FILES OR SOFTWARE.
+#
+# Except as contained in this notice, the name of a copyright holder shall not be used in advertising or otherwise to promote the sale, use or other dealings in these Data Files or Software without prior written authorization of the copyright holder.
+# $Revision$
+# $Date$
+
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+
+ldml =
+  element ldml {
+	attlist.ldml,
+	identity,
+	(alias
+	 | (fallback*,
+		localeDisplayNames?,
+		layout?,
+		characters?,
+		delimiters?,
+		measurement?,
+		dates?,
+		numbers?,
+		units?,
+		listPatterns?,
+		collations?,
+		posix?,
+		segmentations?,
+		rbnf?,
+		references?,
+		special*))
+  }
+attlist.ldml &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+
+# #########################################################
+identity =
+  element identity {
+	attlist.identity,
+	(alias
+	 | (version,
+		generation?,
+		language,
+		script?,
+		territory?,
+		variant?,
+		special*))
+  }
+attlist.identity &= empty
+version = element version { attlist.version, empty }
+attlist.version &= attribute number { text }
+attlist.version &=
+  [ a:defaultValue = "1.9" ] attribute cldrVersion { string "1.9" }?
+generation = element generation { attlist.generation, empty }
+attlist.generation &= attribute date { text }
+language = element language { attlist.language, text }
+attlist.language &= attribute type { xsd:NMTOKEN }
+attlist.language &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.language &= attribute references { text }?
+attlist.language &= attribute alt { xsd:NMTOKENS }?
+script = element script { attlist.script, text }
+attlist.script &= attribute type { xsd:NMTOKEN }
+attlist.script &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.script &= attribute references { text }?
+attlist.script &= attribute alt { xsd:NMTOKENS }?
+territory = element territory { attlist.territory, text }
+attlist.territory &= attribute type { xsd:NMTOKEN }
+attlist.territory &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.territory &= attribute references { text }?
+attlist.territory &= attribute alt { xsd:NMTOKENS }?
+variant = element variant { attlist.variant, text }
+attlist.variant &= attribute type { xsd:NMTOKEN }
+attlist.variant &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.variant &= attribute references { text }?
+attlist.variant &= attribute alt { xsd:NMTOKENS }?
+# #########################################################
+
+# These elements are common to almost all elements defined
+
+# #########################################################
+alias = element alias { attlist.alias, special* }
+attlist.alias &= attribute source { xsd:NMTOKEN }
+attlist.alias &= attribute path { text }?
+attlist.alias &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.alias &= attribute alt { xsd:NMTOKENS }?
+\default = element default { attlist.default, special* }
+attlist.default &= attribute type { xsd:NMTOKEN }?
+# deprecated in favor of choice
+attlist.default &= attribute choice { xsd:NMTOKEN }?
+# really required, but needs to be optional to support type also
+attlist.default &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.default &= attribute references { text }?
+attlist.default &= attribute alt { xsd:NMTOKENS }?
+special = element special { attlist.special, any }
+attlist.special &= empty
+# This element can occur anywhere there may be localizable data
+cp = element cp { attlist.cp, special* }
+attlist.cp &= attribute hex { xsd:NMTOKEN }
+# #########################################################
+
+# #########################################################
+fallback = element fallback { attlist.fallback, text }
+attlist.fallback &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+attlist.fallback &= attribute references { text }?
+attlist.fallback &= attribute alt { xsd:NMTOKENS }?
+localeDisplayNames =
+  element localeDisplayNames {
+	attlist.localeDisplayNames,
+	(alias
+	 | (localeDisplayPattern?,
+		languages?,
+		scripts?,
+		territories?,
+		variants?,
+		keys?,
+		types?,
+		transformNames?,
+		measurementSystemNames?,
+		codePatterns?,
+		special*))
+  }
+attlist.localeDisplayNames &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+
+# Either 1 alias OR any specials, any order, zero or more language
+languages =
+  element languages {
+	attlist.languages,
+	(alias | (language | special)*)
+  }
+attlist.languages &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.languages &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.languages &= attribute references { text }?
+attlist.languages &= attribute validSubLocales { text }?
+# Either 1 alias OR any specials, any order, zero or more script
+scripts =
+  element scripts {
+	attlist.scripts,
+	(alias | (script | special)*)
+  }
+attlist.scripts &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.scripts &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.scripts &= attribute references { text }?
+attlist.scripts &= attribute validSubLocales { text }?
+# Either 1 alias OR any specials, any order, zero or more territory
+territories =
+  element territories {
+	attlist.territories,
+	(alias | (territory | special)*)
+  }
+attlist.territories &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.territories &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.territories &= attribute references { text }?
+attlist.territories &= attribute validSubLocales { text }?
+# Either 1 alias OR any specials, any order, zero or more variant
+variants =
+  element variants {
+	attlist.variants,
+	(alias | (variant | special)*)
+  }
+attlist.variants &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.variants &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.variants &= attribute references { text }?
+attlist.variants &= attribute validSubLocales { text }?
+# Either 1 alias OR any specials, any order, zero or more key
+keys =
+  element keys {
+	attlist.keys,
+	(alias | (key | special)*)
+  }
+attlist.keys &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.keys &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.keys &= attribute references { text }?
+attlist.keys &= attribute validSubLocales { text }?
+key = element key { attlist.key, text }
+attlist.key &= attribute type { xsd:NMTOKEN }
+attlist.key &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.key &= attribute references { text }?
+attlist.key &= attribute alt { xsd:NMTOKENS }?
+# Either 1 alias OR any specials, any order, zero or more type
+types =
+  element types {
+	attlist.types,
+	(alias | (type | special)*)
+  }
+attlist.types &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.types &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.types &= attribute references { text }?
+attlist.types &= attribute validSubLocales { text }?
+type = element type { attlist.type, text }
+attlist.type &= attribute type { xsd:NMTOKEN }
+attlist.type &= attribute key { xsd:NMTOKEN }?
+attlist.type &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.type &= attribute references { text }?
+attlist.type &= attribute alt { xsd:NMTOKENS }?
+transformNames =
+  element transformNames {
+	attlist.transformNames,
+	(alias | (transformName | special)*)
+  }
+attlist.transformNames &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+attlist.transformNames &= attribute references { text }?
+transformName = element transformName { attlist.transformName, text }
+attlist.transformName &= attribute type { xsd:NMTOKEN }
+attlist.transformName &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+attlist.transformName &= attribute references { text }?
+attlist.transformName &= attribute alt { xsd:NMTOKENS }?
+codePatterns =
+  element codePatterns {
+	attlist.codePatterns,
+	(alias | (codePattern | special)*)
+  }
+attlist.codePatterns &= empty
+codePattern = element codePattern { attlist.codePattern, text }
+attlist.codePattern &= attribute type { xsd:NMTOKEN }
+attlist.codePattern &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+attlist.codePattern &= attribute references { text }?
+attlist.codePattern &= attribute alt { xsd:NMTOKENS }?
+# Either 1 alias OR any specials, any order, zero or more measurementSystemName
+measurementSystemNames =
+  element measurementSystemNames {
+	attlist.measurementSystemNames,
+	(alias | (measurementSystemName | special)*)
+  }
+attlist.measurementSystemNames &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.measurementSystemNames &= attribute references { text }?
+attlist.measurementSystemNames &= attribute validSubLocales { text }?
+measurementSystemName =
+  element measurementSystemName { attlist.measurementSystemName, text }
+attlist.measurementSystemName &=
+  attribute type { "US" | "metric" | "UK" }
+attlist.measurementSystemName &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.measurementSystemName &= attribute references { text }?
+attlist.measurementSystemName &= attribute alt { xsd:NMTOKENS }?
+localeDisplayPattern =
+  element localeDisplayPattern {
+	attlist.localeDisplayPattern,
+	(alias | (localePattern*, localeSeparator*, special*))
+  }
+attlist.localeDisplayPattern &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+attlist.localeDisplayPattern &= attribute references { text }?
+attlist.localeDisplayPattern &= attribute alt { xsd:NMTOKENS }?
+localePattern = element localePattern { attlist.localePattern, text }
+attlist.localePattern &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+attlist.localePattern &= attribute references { text }?
+attlist.localePattern &= attribute alt { xsd:NMTOKENS }?
+localeSeparator =
+  element localeSeparator { attlist.localeSeparator, text }
+attlist.localeSeparator &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+attlist.localeSeparator &= attribute references { text }?
+attlist.localeSeparator &= attribute alt { xsd:NMTOKENS }?
+# #########################################################
+
+# #########################################################
+
+# layout and orientation are script specific, so validSublocales attribute is not required
+layout =
+  element layout {
+	attlist.layout,
+	(alias | (orientation*, inList*, inText*, special*))
+  }
+attlist.layout &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.layout &= attribute references { text }?
+orientation = element orientation { attlist.orientation, special* }
+attlist.orientation &=
+  [ a:defaultValue = "left-to-right" ]
+  attribute characters {
+	"left-to-right"
+	| "right-to-left"
+	| "top-to-bottom"
+	| "bottom-to-top"
+  }?
+attlist.orientation &=
+  [ a:defaultValue = "top-to-bottom" ]
+  attribute lines {
+	"left-to-right"
+	| "right-to-left"
+	| "top-to-bottom"
+	| "bottom-to-top"
+  }?
+attlist.orientation &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.orientation &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.orientation &= attribute references { text }?
+attlist.orientation &= attribute alt { xsd:NMTOKENS }?
+inList = element inList { attlist.inList, text }
+attlist.inList &=
+  attribute casing {
+	"titlecase-words"
+	| "titlecase-firstword"
+	| "lowercase-words"
+	| "mixed"
+  }?
+# deprecated
+attlist.inList &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.inList &= attribute references { text }?
+attlist.inList &= attribute alt { xsd:NMTOKENS }?
+inText = element inText { attlist.inText, text }
+attlist.inText &=
+  attribute type {
+	"languages"
+	| "scripts"
+	| "territories"
+	| "variants"
+	| "keys"
+	| "types"
+	| "measurementSystemNames"
+	| "monthWidth"
+	| "dayWidth"
+	| "quarterWidth"
+	| "long"
+	| "fields"
+	| "currency"
+  }?
+attlist.inText &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+attlist.inText &= attribute references { text }?
+attlist.inText &= attribute alt { xsd:NMTOKENS }?
+# #########################################################
+
+# #########################################################
+characters =
+  element characters {
+	attlist.characters,
+	(alias
+	 | (exemplarCharacters*,
+		ellipsis*,
+		moreInformation*,
+		indexLabels*,
+		mapping*,
+		special*))
+  }
+attlist.characters &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+exemplarCharacters =
+  element exemplarCharacters {
+	attlist.exemplarCharacters, (text | cp)*
+  }
+attlist.exemplarCharacters &=
+  attribute type {
+	"auxiliary"
+	| "standard"
+	| "punctuation"
+	| "currencySymbol"
+	| "index"
+  }?
+attlist.exemplarCharacters &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.exemplarCharacters &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.exemplarCharacters &= attribute references { text }?
+attlist.exemplarCharacters &= attribute alt { xsd:NMTOKENS }?
+attlist.exemplarCharacters &= attribute validSubLocales { text }?
+ellipsis = element ellipsis { attlist.ellipsis, text }
+attlist.ellipsis &= attribute type { "initial" | "medial" | "final" }?
+attlist.ellipsis &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+attlist.ellipsis &= attribute references { text }?
+attlist.ellipsis &= attribute alt { xsd:NMTOKENS }?
+moreInformation =
+  element moreInformation { attlist.moreInformation, text }
+attlist.moreInformation &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+attlist.moreInformation &= attribute references { text }?
+attlist.moreInformation &= attribute alt { xsd:NMTOKENS }?
+indexLabels =
+  element indexLabels {
+	attlist.indexLabels,
+	indexSeparator*,
+	compressedIndexSeparator*,
+	indexRangePattern*,
+	indexLabelBefore*,
+	indexLabelAfter*,
+	indexLabel*
+  }
+attlist.indexLabels &= empty
+indexSeparator = element indexSeparator { attlist.indexSeparator, text }
+attlist.indexSeparator &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+attlist.indexSeparator &= attribute references { text }?
+attlist.indexSeparator &= attribute alt { xsd:NMTOKENS }?
+compressedIndexSeparator =
+  element compressedIndexSeparator {
+	attlist.compressedIndexSeparator, text
+  }
+attlist.compressedIndexSeparator &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+attlist.compressedIndexSeparator &= attribute references { text }?
+attlist.compressedIndexSeparator &= attribute alt { xsd:NMTOKENS }?
+indexRangePattern =
+  element indexRangePattern { attlist.indexRangePattern, text }
+attlist.indexRangePattern &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+attlist.indexRangePattern &= attribute references { text }?
+attlist.indexRangePattern &= attribute alt { xsd:NMTOKENS }?
+indexLabelBefore =
+  element indexLabelBefore { attlist.indexLabelBefore, text }
+attlist.indexLabelBefore &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+attlist.indexLabelBefore &= attribute references { text }?
+attlist.indexLabelBefore &= attribute alt { xsd:NMTOKENS }?
+indexLabelAfter =
+  element indexLabelAfter { attlist.indexLabelAfter, text }
+attlist.indexLabelAfter &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+attlist.indexLabelAfter &= attribute references { text }?
+attlist.indexLabelAfter &= attribute alt { xsd:NMTOKENS }?
+indexLabel = element indexLabel { attlist.indexLabel, text }
+attlist.indexLabel &= attribute indexSource { text }?
+attlist.indexLabel &= attribute priority { "1" | "2" | "3" }?
+attlist.indexLabel &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+attlist.indexLabel &= attribute references { text }?
+attlist.indexLabel &= attribute alt { xsd:NMTOKENS }?
+mapping = element mapping { attlist.mapping, special* }
+attlist.mapping &= attribute registry { xsd:NMTOKEN }
+attlist.mapping &= attribute type { xsd:NMTOKEN }?
+# deprecated in favor of choice
+attlist.mapping &= attribute choice { xsd:NMTOKEN }?
+attlist.mapping &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.mapping &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.mapping &= attribute references { text }?
+attlist.mapping &= attribute alt { xsd:NMTOKENS }?
+attlist.mapping &= attribute validSubLocales { text }?
+# #########################################################
+
+# #########################################################
+delimiters =
+  element delimiters {
+	attlist.delimiters,
+	(alias
+	 | (quotationStart*,
+		quotationEnd*,
+		alternateQuotationStart*,
+		alternateQuotationEnd*,
+		special*))
+  }
+attlist.delimiters &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.delimiters &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.delimiters &= attribute references { text }?
+attlist.delimiters &= attribute alt { xsd:NMTOKENS }?
+attlist.delimiters &= attribute validSubLocales { text }?
+quotationStart =
+  element quotationStart { attlist.quotationStart, (text | cp)* }
+attlist.quotationStart &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.quotationStart &= attribute references { text }?
+attlist.quotationStart &= attribute alt { xsd:NMTOKENS }?
+quotationEnd =
+  element quotationEnd { attlist.quotationEnd, (text | cp)* }
+attlist.quotationEnd &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.quotationEnd &= attribute references { text }?
+attlist.quotationEnd &= attribute alt { xsd:NMTOKENS }?
+alternateQuotationStart =
+  element alternateQuotationStart {
+	attlist.alternateQuotationStart, (text | cp)*
+  }
+attlist.alternateQuotationStart &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.alternateQuotationStart &= attribute references { text }?
+attlist.alternateQuotationStart &= attribute alt { xsd:NMTOKENS }?
+alternateQuotationEnd =
+  element alternateQuotationEnd {
+	attlist.alternateQuotationEnd, (text | cp)*
+  }
+attlist.alternateQuotationEnd &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.alternateQuotationEnd &= attribute references { text }?
+attlist.alternateQuotationEnd &= attribute alt { xsd:NMTOKENS }?
+# #########################################################
+
+# #########################################################
+measurement =
+  element measurement {
+	attlist.measurement,
+	(alias | (measurementSystem*, paperSize*, special*))
+  }
+# deprecated, use measurementData in supplemental instead
+attlist.measurement &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.measurement &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.measurement &= attribute references { text }?
+attlist.measurement &= attribute alt { xsd:NMTOKENS }?
+attlist.measurement &= attribute validSubLocales { text }?
+paperSize =
+  element paperSize {
+	attlist.paperSize,
+	(alias | (height*, width*, special*))
+  }
+# deprecated, use paperSize in supplemental instead
+attlist.paperSize &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.paperSize &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.paperSize &= attribute references { text }?
+attlist.paperSize &= attribute alt { xsd:NMTOKENS }?
+attlist.paperSize &= attribute validSubLocales { text }?
+height = element height { attlist.height, text }
+# deprecated
+attlist.height &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.height &= attribute references { text }?
+attlist.height &= attribute alt { xsd:NMTOKENS }?
+width = element width { attlist.width, text }
+# deprecated
+attlist.width &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.width &= attribute references { text }?
+attlist.width &= attribute alt { xsd:NMTOKENS }?
+measurementSystem =
+  element measurementSystem { attlist.measurementSystem, special* }
+# deprecated, use measurementSystem in supplemental instead
+attlist.measurementSystem &= attribute type { "metric" | "US" | "UK" }?
+# deprecated in favor of choice
+attlist.measurementSystem &=
+  attribute choice { "metric" | "US" | "UK" }?
+# really required, but needs to be optional to support type also
+attlist.measurementSystem &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.measurementSystem &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.measurementSystem &= attribute references { text }?
+attlist.measurementSystem &= attribute alt { xsd:NMTOKENS }?
+attlist.measurementSystem &= attribute validSubLocales { text }?
+# #########################################################
+
+# #########################################################
+dates =
+  element dates {
+	attlist.dates,
+	(alias
+	 | (localizedPatternChars*,
+		dateRangePattern*,
+		calendars?,
+		timeZoneNames?,
+		special*))
+  }
+attlist.dates &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.dates &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.dates &= attribute references { text }?
+attlist.dates &= attribute alt { xsd:NMTOKENS }?
+attlist.dates &= attribute validSubLocales { text }?
+localizedPatternChars =
+  element localizedPatternChars {
+	attlist.localizedPatternChars, (text | cp)*
+  }
+# deprecated.
+attlist.localizedPatternChars &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.localizedPatternChars &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.localizedPatternChars &= attribute references { text }?
+attlist.localizedPatternChars &= attribute alt { xsd:NMTOKENS }?
+attlist.localizedPatternChars &= attribute validSubLocales { text }?
+dateRangePattern =
+  element dateRangePattern { attlist.dateRangePattern, text }
+# deprecated, use intervalFormats.
+attlist.dateRangePattern &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+attlist.dateRangePattern &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.dateRangePattern &= attribute references { text }?
+attlist.dateRangePattern &= attribute alt { xsd:NMTOKENS }?
+attlist.dateRangePattern &= attribute validSubLocales { text }?
+calendars =
+  element calendars {
+	attlist.calendars,
+	(alias | (\default*, calendar*, special*))
+  }
+attlist.calendars &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.calendars &= attribute validSubLocales { text }?
+calendar =
+  element calendar {
+	attlist.calendar,
+	(alias
+	 | (months?,
+		monthNames?,
+		monthAbbr?,
+		days?,
+		dayNames?,
+		dayAbbr?,
+		quarters?,
+		week?,
+		am*,
+		pm*,
+		dayPeriods?,
+		eras?,
+		dateFormats?,
+		timeFormats?,
+		dateTimeFormats?,
+		fields*,
+		special*))
+  }
+attlist.calendar &= attribute type { xsd:NMTOKEN }
+attlist.calendar &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.calendar &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.calendar &= attribute references { text }?
+attlist.calendar &= attribute alt { xsd:NMTOKENS }?
+attlist.calendar &= attribute validSubLocales { text }?
+months =
+  element months {
+	attlist.months,
+	(alias | (\default*, monthContext*, special*))
+  }
+attlist.months &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.months &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.months &= attribute references { text }?
+attlist.months &= attribute alt { xsd:NMTOKENS }?
+attlist.months &= attribute validSubLocales { text }?
+monthContext =
+  element monthContext {
+	attlist.monthContext,
+	(alias | (\default*, monthWidth*, special*))
+  }
+attlist.monthContext &= attribute type { "format" | "stand-alone" }
+attlist.monthContext &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.monthContext &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.monthContext &= attribute references { text }?
+attlist.monthContext &= attribute alt { xsd:NMTOKENS }?
+attlist.monthContext &= attribute validSubLocales { text }?
+monthWidth =
+  element monthWidth {
+	attlist.monthWidth,
+	(alias | (month*, special*))
+  }
+attlist.monthWidth &=
+  attribute type { "abbreviated" | "narrow" | "wide" }
+attlist.monthWidth &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.monthWidth &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.monthWidth &= attribute references { text }?
+attlist.monthWidth &= attribute alt { xsd:NMTOKENS }?
+attlist.monthWidth &= attribute validSubLocales { text }?
+month = element month { attlist.month, (text | cp)* }
+attlist.month &=
+  attribute type {
+	"1"
+	| "2"
+	| "3"
+	| "4"
+	| "5"
+	| "6"
+	| "7"
+	| "8"
+	| "9"
+	| "10"
+	| "11"
+	| "12"
+	| "13"
+  }
+attlist.month &= attribute yeartype { "standard" | "leap" }?
+attlist.month &= attribute references { text }?
+attlist.month &= attribute alt { xsd:NMTOKENS }?
+attlist.month &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+
+# START_DEPRECATED
+monthNames =
+  element monthNames {
+	attlist.monthNames,
+	(alias | (month*, special*))
+  }
+attlist.monthNames &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+monthAbbr =
+  element monthAbbr {
+	attlist.monthAbbr,
+	(alias | (month*, special*))
+  }
+attlist.monthAbbr &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+
+#  END_DEPRECATED
+days =
+  element days {
+	attlist.days,
+	(alias | (\default*, dayContext*, special*))
+  }
+attlist.days &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.days &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.days &= attribute references { text }?
+attlist.days &= attribute alt { xsd:NMTOKENS }?
+attlist.days &= attribute validSubLocales { text }?
+dayContext =
+  element dayContext {
+	attlist.dayContext,
+	(alias | (\default*, dayWidth*, special*))
+  }
+attlist.dayContext &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.dayContext &= attribute type { "format" | "stand-alone" }
+attlist.dayContext &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.dayContext &= attribute references { text }?
+attlist.dayContext &= attribute alt { xsd:NMTOKENS }?
+attlist.dayContext &= attribute validSubLocales { text }?
+dayWidth =
+  element dayWidth {
+	attlist.dayWidth,
+	(alias | (day*, special*))
+  }
+attlist.dayWidth &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.dayWidth &= attribute type { xsd:NMTOKEN }
+attlist.dayWidth &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.dayWidth &= attribute references { text }?
+attlist.dayWidth &= attribute alt { xsd:NMTOKENS }?
+attlist.dayWidth &= attribute validSubLocales { text }?
+day = element day { attlist.day, text }
+attlist.day &=
+  attribute type {
+	"sun" | "mon" | "tue" | "wed" | "thu" | "fri" | "sat"
+  }
+attlist.day &= attribute references { text }?
+attlist.day &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.day &= attribute alt { xsd:NMTOKENS }?
+quarters =
+  element quarters {
+	attlist.quarters,
+	(alias | (\default*, quarterContext*, special*))
+  }
+attlist.quarters &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.quarters &= attribute references { text }?
+attlist.quarters &= attribute alt { xsd:NMTOKENS }?
+attlist.quarters &= attribute validSubLocales { text }?
+quarterContext =
+  element quarterContext {
+	attlist.quarterContext,
+	(alias | (\default*, quarterWidth*, special*))
+  }
+attlist.quarterContext &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.quarterContext &= attribute type { "format" | "stand-alone" }
+attlist.quarterContext &= attribute references { text }?
+attlist.quarterContext &= attribute alt { xsd:NMTOKENS }?
+attlist.quarterContext &= attribute validSubLocales { text }?
+quarterWidth =
+  element quarterWidth {
+	attlist.quarterWidth,
+	(alias | (quarter*, special*))
+  }
+attlist.quarterWidth &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.quarterWidth &= attribute type { xsd:NMTOKEN }
+attlist.quarterWidth &= attribute references { text }?
+attlist.quarterWidth &= attribute alt { xsd:NMTOKENS }?
+attlist.quarterWidth &= attribute validSubLocales { text }?
+quarter = element quarter { attlist.quarter, text }
+attlist.quarter &= attribute type { "1" | "2" | "3" | "4" }
+attlist.quarter &= attribute references { text }?
+attlist.quarter &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.quarter &= attribute alt { xsd:NMTOKENS }?
+#  START_DEPRECATED
+dayAbbr =
+  element dayAbbr {
+	attlist.dayAbbr,
+	(alias | (day*, special*))
+  }
+attlist.dayAbbr &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+dayNames =
+  element dayNames {
+	attlist.dayNames,
+	(alias | (day*, special*))
+  }
+attlist.dayNames &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+week =
+  element week {
+	attlist.week,
+	(alias
+	 | (minDays*, firstDay*, weekendStart*, weekendEnd*, special*))
+  }
+attlist.week &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.week &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.week &= attribute references { text }?
+attlist.week &= attribute alt { xsd:NMTOKENS }?
+attlist.week &= attribute validSubLocales { text }?
+minDays = element minDays { attlist.minDays, special* }
+attlist.minDays &=
+  attribute count { "1" | "2" | "3" | "4" | "5" | "6" | "7" }
+attlist.minDays &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.minDays &= attribute references { text }?
+attlist.minDays &= attribute alt { xsd:NMTOKENS }?
+firstDay = element firstDay { attlist.firstDay, special* }
+attlist.firstDay &= attribute day { xsd:NMTOKEN }
+attlist.firstDay &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.firstDay &= attribute references { text }?
+attlist.firstDay &= attribute alt { xsd:NMTOKENS }?
+weekendStart = element weekendStart { attlist.weekendStart, special* }
+attlist.weekendStart &=
+  attribute day {
+	"sun" | "mon" | "tue" | "wed" | "thu" | "fri" | "sat"
+  }
+attlist.weekendStart &=
+  [ a:defaultValue = "00:00" ] attribute time { text }?
+attlist.weekendStart &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.weekendStart &= attribute references { text }?
+attlist.weekendStart &= attribute alt { xsd:NMTOKENS }?
+weekendEnd = element weekendEnd { attlist.weekendEnd, special* }
+attlist.weekendEnd &=
+  attribute day {
+	"sun" | "mon" | "tue" | "wed" | "thu" | "fri" | "sat"
+  }
+attlist.weekendEnd &=
+  [ a:defaultValue = "24:00" ] attribute time { text }?
+attlist.weekendEnd &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.weekendEnd &= attribute references { text }?
+attlist.weekendEnd &= attribute alt { xsd:NMTOKENS }?
+#  END_DEPRECATED
+dayPeriods =
+  element dayPeriods { attlist.dayPeriods, (alias | dayPeriodContext*) }
+attlist.dayPeriods &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+attlist.dayPeriods &= attribute references { text }?
+dayPeriodContext =
+  element dayPeriodContext {
+	attlist.dayPeriodContext, (alias | dayPeriodWidth*)
+  }
+attlist.dayPeriodContext &= attribute type { xsd:NMTOKEN }
+attlist.dayPeriodContext &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+attlist.dayPeriodContext &= attribute references { text }?
+dayPeriodWidth =
+  element dayPeriodWidth {
+	attlist.dayPeriodWidth, (alias | dayPeriod*)
+  }
+attlist.dayPeriodWidth &= attribute type { xsd:NMTOKEN }
+attlist.dayPeriodWidth &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+attlist.dayPeriodWidth &= attribute references { text }?
+dayPeriod = element dayPeriod { attlist.dayPeriod, text }
+attlist.dayPeriod &= attribute type { xsd:NMTOKEN }
+attlist.dayPeriod &= attribute alt { xsd:NMTOKENS }?
+attlist.dayPeriod &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+attlist.dayPeriod &= attribute references { text }?
+am = element am { attlist.am, text }
+attlist.am &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.am &= attribute references { text }?
+attlist.am &= attribute alt { xsd:NMTOKENS }?
+attlist.am &= attribute validSubLocales { text }?
+pm = element pm { attlist.pm, text }
+attlist.pm &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.pm &= attribute references { text }?
+attlist.pm &= attribute alt { xsd:NMTOKENS }?
+attlist.pm &= attribute validSubLocales { text }?
+eras =
+  element eras {
+	attlist.eras,
+	(alias | (eraNames?, eraAbbr?, eraNarrow?, special*))
+  }
+attlist.eras &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.eras &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.eras &= attribute references { text }?
+attlist.eras &= attribute alt { xsd:NMTOKENS }?
+attlist.eras &= attribute validSubLocales { text }?
+eraNames =
+  element eraNames {
+	attlist.eraNames,
+	(alias | (era*, special*))
+  }
+attlist.eraNames &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.eraNames &= attribute references { text }?
+attlist.eraNames &= attribute alt { xsd:NMTOKENS }?
+attlist.eraNames &= attribute validSubLocales { text }?
+eraAbbr =
+  element eraAbbr {
+	attlist.eraAbbr,
+	(alias | (era*, special*))
+  }
+attlist.eraAbbr &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.eraAbbr &= attribute references { text }?
+attlist.eraAbbr &= attribute alt { xsd:NMTOKENS }?
+attlist.eraAbbr &= attribute validSubLocales { text }?
+eraNarrow =
+  element eraNarrow {
+	attlist.eraNarrow,
+	(alias | (era*, special*))
+  }
+attlist.eraNarrow &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.eraNarrow &= attribute references { text }?
+attlist.eraNarrow &= attribute alt { xsd:NMTOKENS }?
+attlist.eraNarrow &= attribute validSubLocales { text }?
+era = element era { attlist.era, text }
+attlist.era &= attribute type { xsd:NMTOKEN }
+attlist.era &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.era &= attribute references { text }?
+attlist.era &= attribute alt { xsd:NMTOKENS }?
+dateFormats =
+  element dateFormats {
+	attlist.dateFormats,
+	(alias | (\default*, dateFormatLength*, special*))
+  }
+attlist.dateFormats &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.dateFormats &= attribute validSubLocales { text }?
+dateFormatLength =
+  element dateFormatLength {
+	attlist.dateFormatLength,
+	(alias | (\default*, dateFormat*, special*))
+  }
+attlist.dateFormatLength &=
+  attribute type { "full" | "long" | "medium" | "short" }
+attlist.dateFormatLength &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.dateFormatLength &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.dateFormatLength &= attribute references { text }?
+attlist.dateFormatLength &= attribute alt { xsd:NMTOKENS }?
+attlist.dateFormatLength &= attribute validSubLocales { text }?
+dateFormat =
+  element dateFormat {
+	attlist.dateFormat,
+	(alias | (pattern*, displayName*, special*))
+  }
+attlist.dateFormat &=
+  [ a:defaultValue = "standard" ] attribute type { xsd:NMTOKEN }?
+attlist.dateFormat &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.dateFormat &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.dateFormat &= attribute references { text }?
+attlist.dateFormat &= attribute alt { xsd:NMTOKENS }?
+attlist.dateFormat &= attribute validSubLocales { text }?
+displayName = element displayName { attlist.displayName, text }
+attlist.displayName &=
+  attribute count { "zero" | "one" | "two" | "few" | "many" | "other" }?
+# only for currencies
+attlist.displayName &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.displayName &= attribute references { text }?
+attlist.displayName &= attribute alt { xsd:NMTOKENS }?
+timeFormats =
+  element timeFormats {
+	attlist.timeFormats,
+	(alias | (\default*, timeFormatLength*, special*))
+  }
+attlist.timeFormats &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.timeFormats &= attribute validSubLocales { text }?
+timeFormatLength =
+  element timeFormatLength {
+	attlist.timeFormatLength,
+	(alias | (\default*, timeFormat*, special*))
+  }
+attlist.timeFormatLength &=
+  attribute type { "full" | "long" | "medium" | "short" }
+attlist.timeFormatLength &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.timeFormatLength &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.timeFormatLength &= attribute references { text }?
+attlist.timeFormatLength &= attribute alt { xsd:NMTOKENS }?
+attlist.timeFormatLength &= attribute validSubLocales { text }?
+timeFormat =
+  element timeFormat {
+	attlist.timeFormat,
+	(alias | (pattern*, displayName*, special*))
+  }
+attlist.timeFormat &=
+  [ a:defaultValue = "standard" ] attribute type { xsd:NMTOKEN }?
+attlist.timeFormat &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.timeFormat &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.timeFormat &= attribute references { text }?
+attlist.timeFormat &= attribute alt { xsd:NMTOKENS }?
+attlist.timeFormat &= attribute validSubLocales { text }?
+dateTimeFormats =
+  element dateTimeFormats {
+	attlist.dateTimeFormats,
+	(alias
+	 | (\default*,
+		dateTimeFormatLength*,
+		availableFormats*,
+		appendItems*,
+		intervalFormats*,
+		special*))
+  }
+attlist.dateTimeFormats &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.dateTimeFormats &= attribute validSubLocales { text }?
+dateTimeFormatLength =
+  element dateTimeFormatLength {
+	attlist.dateTimeFormatLength,
+	(alias | (\default*, dateTimeFormat*, special*))
+  }
+attlist.dateTimeFormatLength &=
+  attribute type { "full" | "long" | "medium" | "short" }?
+attlist.dateTimeFormatLength &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.dateTimeFormatLength &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.dateTimeFormatLength &= attribute references { text }?
+attlist.dateTimeFormatLength &= attribute alt { xsd:NMTOKENS }?
+attlist.dateTimeFormatLength &= attribute validSubLocales { text }?
+dateTimeFormat =
+  element dateTimeFormat {
+	attlist.dateTimeFormat,
+	(alias | (pattern*, displayName*, special*))
+  }
+attlist.dateTimeFormat &=
+  [ a:defaultValue = "standard" ] attribute type { xsd:NMTOKEN }?
+attlist.dateTimeFormat &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.dateTimeFormat &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.dateTimeFormat &= attribute references { text }?
+attlist.dateTimeFormat &= attribute alt { xsd:NMTOKENS }?
+attlist.dateTimeFormat &= attribute validSubLocales { text }?
+availableFormats =
+  element availableFormats {
+	attlist.availableFormats,
+	(alias | (dateFormatItem*, special*))
+  }
+attlist.availableFormats &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.availableFormats &= attribute references { text }?
+attlist.availableFormats &= attribute alt { xsd:NMTOKENS }?
+attlist.availableFormats &= attribute validSubLocales { text }?
+appendItems =
+  element appendItems {
+	attlist.appendItems,
+	(alias | (appendItem*, special*))
+  }
+attlist.appendItems &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.appendItems &= attribute references { text }?
+attlist.appendItems &= attribute alt { xsd:NMTOKENS }?
+attlist.appendItems &= attribute validSubLocales { text }?
+dateFormatItem = element dateFormatItem { attlist.dateFormatItem, text }
+attlist.dateFormatItem &= attribute id { text }
+attlist.dateFormatItem &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.dateFormatItem &= attribute references { text }?
+attlist.dateFormatItem &= attribute alt { xsd:NMTOKENS }?
+appendItem = element appendItem { attlist.appendItem, text }
+attlist.appendItem &= attribute request { text }
+attlist.appendItem &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.appendItem &= attribute references { text }?
+attlist.appendItem &= attribute alt { xsd:NMTOKENS }?
+intervalFormats =
+  element intervalFormats {
+	attlist.intervalFormats,
+	(alias | (intervalFormatFallback*, intervalFormatItem*, special*))
+  }
+attlist.intervalFormats &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+# true and false are deprecated.
+attlist.intervalFormats &= attribute references { text }?
+attlist.intervalFormats &= attribute alt { xsd:NMTOKENS }?
+attlist.intervalFormats &= attribute validSubLocales { text }?
+intervalFormatFallback =
+  element intervalFormatFallback {
+	attlist.intervalFormatFallback, text
+  }
+attlist.intervalFormatFallback &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+# true and false are deprecated.
+attlist.intervalFormatFallback &= attribute references { text }?
+attlist.intervalFormatFallback &= attribute alt { xsd:NMTOKENS }?
+attlist.intervalFormatFallback &= attribute validSubLocales { text }?
+intervalFormatItem =
+  element intervalFormatItem {
+	attlist.intervalFormatItem,
+	(alias | (greatestDifference*, special*))
+  }
+attlist.intervalFormatItem &= attribute id { xsd:NMTOKEN }
+attlist.intervalFormatItem &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+# true and false are deprecated.
+attlist.intervalFormatItem &= attribute references { text }?
+attlist.intervalFormatItem &= attribute alt { xsd:NMTOKENS }?
+attlist.intervalFormatItem &= attribute validSubLocales { text }?
+greatestDifference =
+  element greatestDifference { attlist.greatestDifference, text }
+attlist.greatestDifference &= attribute id { xsd:NMTOKEN }
+attlist.greatestDifference &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+# true and false are deprecated.
+attlist.greatestDifference &= attribute references { text }?
+attlist.greatestDifference &= attribute alt { xsd:NMTOKENS }?
+attlist.greatestDifference &= attribute validSubLocales { text }?
+timeZoneNames =
+  element timeZoneNames {
+	attlist.timeZoneNames,
+	(alias
+	 | (hourFormat*,
+		hoursFormat*,
+		gmtFormat*,
+		gmtZeroFormat*,
+		regionFormat*,
+		fallbackFormat*,
+		abbreviationFallback*,
+		preferenceOrdering*,
+		singleCountries*,
+		\default*,
+		zone*,
+		metazone*,
+		special*))
+  }
+attlist.timeZoneNames &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.timeZoneNames &= attribute validSubLocales { text }?
+hourFormat = element hourFormat { attlist.hourFormat, text }
+attlist.hourFormat &= attribute alt { xsd:NMTOKENS }?
+attlist.hourFormat &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.hourFormat &= attribute references { text }?
+hoursFormat = element hoursFormat { attlist.hoursFormat, text }
+# deprecated.
+attlist.hoursFormat &= attribute alt { xsd:NMTOKENS }?
+attlist.hoursFormat &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.hoursFormat &= attribute references { text }?
+gmtFormat = element gmtFormat { attlist.gmtFormat, text }
+attlist.gmtFormat &= attribute alt { xsd:NMTOKENS }?
+attlist.gmtFormat &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.gmtFormat &= attribute references { text }?
+gmtZeroFormat = element gmtZeroFormat { attlist.gmtZeroFormat, text }
+attlist.gmtZeroFormat &= attribute alt { xsd:NMTOKENS }?
+attlist.gmtZeroFormat &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.gmtZeroFormat &= attribute references { text }?
+regionFormat = element regionFormat { attlist.regionFormat, text }
+attlist.regionFormat &= attribute alt { xsd:NMTOKENS }?
+attlist.regionFormat &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.regionFormat &= attribute references { text }?
+fallbackFormat = element fallbackFormat { attlist.fallbackFormat, text }
+attlist.fallbackFormat &= attribute alt { xsd:NMTOKENS }?
+attlist.fallbackFormat &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.fallbackFormat &= attribute references { text }?
+abbreviationFallback =
+  element abbreviationFallback { attlist.abbreviationFallback, empty }
+# deprecated.
+attlist.abbreviationFallback &= attribute type { "GMT" | "standard" }?
+# deprecated in favor of choice
+attlist.abbreviationFallback &= attribute choice { "GMT" | "standard" }?
+# really required, but needs to be optional to support type also
+attlist.abbreviationFallback &= attribute alt { xsd:NMTOKENS }?
+attlist.abbreviationFallback &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.abbreviationFallback &= attribute references { text }?
+preferenceOrdering =
+  element preferenceOrdering { attlist.preferenceOrdering, empty }
+# deprecated, use metazones instead
+attlist.preferenceOrdering &= attribute type { text }?
+# deprecated in favor of choice
+attlist.preferenceOrdering &= attribute choice { text }?
+# really required, but needs to be optional to support type also
+attlist.preferenceOrdering &= attribute alt { xsd:NMTOKENS }?
+attlist.preferenceOrdering &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.preferenceOrdering &= attribute references { text }?
+singleCountries =
+  element singleCountries { attlist.singleCountries, empty }
+attlist.singleCountries &= attribute list { text }
+attlist.singleCountries &= attribute alt { xsd:NMTOKENS }?
+attlist.singleCountries &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.singleCountries &= attribute references { text }?
+zone =
+  element zone {
+	attlist.zone,
+	(alias | (long*, short*, commonlyUsed*, exemplarCity*, special*))
+  }
+attlist.zone &= attribute type { text }
+attlist.zone &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.zone &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.zone &= attribute references { text }?
+attlist.zone &= attribute alt { xsd:NMTOKENS }?
+attlist.zone &= attribute validSubLocales { text }?
+metazone =
+  element metazone {
+	attlist.metazone,
+	(alias | (long*, short*, commonlyUsed*, special*))
+  }
+attlist.metazone &= attribute type { text }
+attlist.metazone &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.metazone &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.metazone &= attribute references { text }?
+attlist.metazone &= attribute alt { xsd:NMTOKENS }?
+attlist.metazone &= attribute validSubLocales { text }?
+long =
+  element long {
+	attlist.long,
+	(alias | (generic*, standard*, daylight*, special*))
+  }
+attlist.long &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.long &= attribute references { text }?
+attlist.long &= attribute alt { xsd:NMTOKENS }?
+attlist.long &= attribute validSubLocales { text }?
+short =
+  element short {
+	attlist.short,
+	(alias | (generic*, standard*, daylight*, special*))
+  }
+attlist.short &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.short &= attribute references { text }?
+attlist.short &= attribute alt { xsd:NMTOKENS }?
+attlist.short &= attribute validSubLocales { text }?
+generic = element generic { attlist.generic, text }
+attlist.generic &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.generic &= attribute references { text }?
+attlist.generic &= attribute alt { xsd:NMTOKENS }?
+standard = element standard { attlist.standard, text }
+attlist.standard &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.standard &= attribute references { text }?
+attlist.standard &= attribute alt { xsd:NMTOKENS }?
+daylight = element daylight { attlist.daylight, text }
+attlist.daylight &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.daylight &= attribute references { text }?
+attlist.daylight &= attribute alt { xsd:NMTOKENS }?
+commonlyUsed = element commonlyUsed { attlist.commonlyUsed, text }
+attlist.commonlyUsed &= attribute used { "true" | "false" }?
+# deprecated
+attlist.commonlyUsed &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.commonlyUsed &= attribute references { text }?
+attlist.commonlyUsed &= attribute alt { xsd:NMTOKENS }?
+exemplarCity = element exemplarCity { attlist.exemplarCity, text }
+attlist.exemplarCity &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.exemplarCity &= attribute references { text }?
+attlist.exemplarCity &= attribute alt { xsd:NMTOKENS }?
+usesMetazone = element usesMetazone { attlist.usesMetazone, empty }
+attlist.usesMetazone &= attribute mzone { xsd:NMTOKEN }
+attlist.usesMetazone &= attribute from { text }?
+attlist.usesMetazone &= attribute to { text }?
+attlist.usesMetazone &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.usesMetazone &= attribute references { text }?
+attlist.usesMetazone &= attribute alt { xsd:NMTOKENS }?
+fields =
+  element fields {
+	attlist.fields,
+	(alias | (field*, special*))
+  }
+attlist.fields &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.fields &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.fields &= attribute references { text }?
+attlist.fields &= attribute alt { xsd:NMTOKENS }?
+attlist.fields &= attribute validSubLocales { text }?
+field =
+  element field {
+	attlist.field,
+	(alias | (displayName*, relative*, special*))
+  }
+attlist.field &=
+  attribute type {
+	"era"
+	| "year"
+	| "month"
+	| "week"
+	| "day"
+	| "weekday"
+	| "dayperiod"
+	| "hour"
+	| "minute"
+	| "second"
+	| "zone"
+  }?
+attlist.field &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.field &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.field &= attribute references { text }?
+attlist.field &= attribute alt { xsd:NMTOKENS }?
+attlist.field &= attribute validSubLocales { text }?
+relative = element relative { attlist.relative, text }
+attlist.relative &= attribute type { xsd:NMTOKEN }?
+attlist.relative &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.relative &= attribute references { text }?
+attlist.relative &= attribute alt { xsd:NMTOKENS }?
+attlist.relative &= attribute validSubLocales { text }?
+# #########################################################
+
+# #########################################################
+numbers =
+  element numbers {
+	attlist.numbers,
+	(alias
+	 | (defaultNumberingSystem*,
+		symbols*,
+		decimalFormats*,
+		scientificFormats*,
+		percentFormats*,
+		currencyFormats*,
+		currencies?,
+		special*))
+  }
+attlist.numbers &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.numbers &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.numbers &= attribute references { text }?
+attlist.numbers &= attribute alt { xsd:NMTOKENS }?
+attlist.numbers &= attribute validSubLocales { text }?
+defaultNumberingSystem =
+  element defaultNumberingSystem {
+	attlist.defaultNumberingSystem, text
+  }
+attlist.defaultNumberingSystem &= attribute references { text }?
+attlist.defaultNumberingSystem &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.defaultNumberingSystem &= attribute alt { xsd:NMTOKENS }?
+symbols =
+  element symbols {
+	attlist.symbols,
+	(alias
+	 | (decimal*,
+		group*,
+		\list*,
+		percentSign*,
+		nativeZeroDigit*,
+		patternDigit*,
+		plusSign*,
+		minusSign*,
+		exponential*,
+		perMille*,
+		infinity*,
+		nan*,
+		currencyDecimal*,
+		currencyGroup*,
+		special*))
+  }
+attlist.symbols &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.symbols &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.symbols &= attribute references { text }?
+attlist.symbols &= attribute alt { xsd:NMTOKENS }?
+attlist.symbols &= attribute validSubLocales { text }?
+attlist.symbols &= attribute numberSystem { text }?
+decimal = element decimal { attlist.decimal, text }
+attlist.decimal &= attribute references { text }?
+attlist.decimal &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.decimal &= attribute alt { xsd:NMTOKENS }?
+group = element group { attlist.group, text }
+attlist.group &= attribute references { text }?
+attlist.group &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.group &= attribute alt { xsd:NMTOKENS }?
+\list = element list { attlist.list, text }
+attlist.list &= attribute references { text }?
+attlist.list &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.list &= attribute alt { xsd:NMTOKENS }?
+percentSign = element percentSign { attlist.percentSign, text }
+attlist.percentSign &= attribute references { text }?
+attlist.percentSign &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.percentSign &= attribute alt { xsd:NMTOKENS }?
+nativeZeroDigit =
+  element nativeZeroDigit { attlist.nativeZeroDigit, text }
+attlist.nativeZeroDigit &= attribute references { text }?
+attlist.nativeZeroDigit &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.nativeZeroDigit &= attribute alt { xsd:NMTOKENS }?
+patternDigit = element patternDigit { attlist.patternDigit, text }
+attlist.patternDigit &= attribute references { text }?
+attlist.patternDigit &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.patternDigit &= attribute alt { xsd:NMTOKENS }?
+plusSign = element plusSign { attlist.plusSign, text }
+attlist.plusSign &= attribute references { text }?
+attlist.plusSign &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.plusSign &= attribute alt { xsd:NMTOKENS }?
+minusSign = element minusSign { attlist.minusSign, text }
+attlist.minusSign &= attribute references { text }?
+attlist.minusSign &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.minusSign &= attribute alt { xsd:NMTOKENS }?
+exponential = element exponential { attlist.exponential, text }
+attlist.exponential &= attribute references { text }?
+attlist.exponential &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.exponential &= attribute alt { xsd:NMTOKENS }?
+perMille = element perMille { attlist.perMille, text }
+attlist.perMille &= attribute references { text }?
+attlist.perMille &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.perMille &= attribute alt { xsd:NMTOKENS }?
+infinity = element infinity { attlist.infinity, text }
+attlist.infinity &= attribute references { text }?
+attlist.infinity &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.infinity &= attribute alt { xsd:NMTOKENS }?
+nan = element nan { attlist.nan, text }
+attlist.nan &= attribute references { text }?
+attlist.nan &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.nan &= attribute alt { xsd:NMTOKENS }?
+currencyDecimal =
+  element currencyDecimal { attlist.currencyDecimal, text }
+attlist.currencyDecimal &= attribute references { text }?
+attlist.currencyDecimal &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.currencyDecimal &= attribute alt { xsd:NMTOKENS }?
+currencyGroup = element currencyGroup { attlist.currencyGroup, text }
+attlist.currencyGroup &= attribute references { text }?
+attlist.currencyGroup &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.currencyGroup &= attribute alt { xsd:NMTOKENS }?
+pattern = element pattern { attlist.pattern, text }
+attlist.pattern &=
+  [ a:defaultValue = "standard" ] attribute type { xsd:NMTOKEN }?
+attlist.pattern &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.pattern &= attribute numbers { text }?
+attlist.pattern &= attribute references { text }?
+attlist.pattern &= attribute alt { xsd:NMTOKENS }?
+decimalFormats =
+  element decimalFormats {
+	attlist.decimalFormats,
+	(alias | (\default*, decimalFormatLength*, special*))
+  }
+attlist.decimalFormats &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.decimalFormats &= attribute validSubLocales { text }?
+attlist.decimalFormats &= attribute numberSystem { text }?
+decimalFormatLength =
+  element decimalFormatLength {
+	attlist.decimalFormatLength,
+	(alias | (\default*, decimalFormat*, special*))
+  }
+attlist.decimalFormatLength &=
+  attribute type { "full" | "long" | "medium" | "short" }?
+attlist.decimalFormatLength &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.decimalFormatLength &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.decimalFormatLength &= attribute references { text }?
+attlist.decimalFormatLength &= attribute alt { xsd:NMTOKENS }?
+attlist.decimalFormatLength &= attribute validSubLocales { text }?
+decimalFormat =
+  element decimalFormat {
+	attlist.decimalFormat,
+	(alias | (pattern*, special*))
+  }
+attlist.decimalFormat &=
+  [ a:defaultValue = "standard" ] attribute type { xsd:NMTOKEN }?
+attlist.decimalFormat &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.decimalFormat &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.decimalFormat &= attribute references { text }?
+attlist.decimalFormat &= attribute alt { xsd:NMTOKENS }?
+attlist.decimalFormat &= attribute validSubLocales { text }?
+scientificFormats =
+  element scientificFormats {
+	attlist.scientificFormats,
+	(alias | (\default*, scientificFormatLength*, special*))
+  }
+attlist.scientificFormats &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.scientificFormats &= attribute validSubLocales { text }?
+attlist.scientificFormats &= attribute numberSystem { text }?
+scientificFormatLength =
+  element scientificFormatLength {
+	attlist.scientificFormatLength,
+	(alias | (\default*, scientificFormat*, special*))
+  }
+attlist.scientificFormatLength &=
+  attribute type { "full" | "long" | "medium" | "short" }?
+attlist.scientificFormatLength &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.scientificFormatLength &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.scientificFormatLength &= attribute references { text }?
+attlist.scientificFormatLength &= attribute alt { xsd:NMTOKENS }?
+attlist.scientificFormatLength &= attribute validSubLocales { text }?
+scientificFormat =
+  element scientificFormat {
+	attlist.scientificFormat,
+	(alias | (pattern*, special*))
+  }
+attlist.scientificFormat &=
+  [ a:defaultValue = "standard" ] attribute type { xsd:NMTOKEN }?
+attlist.scientificFormat &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.scientificFormat &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.scientificFormat &= attribute references { text }?
+attlist.scientificFormat &= attribute alt { xsd:NMTOKENS }?
+attlist.scientificFormat &= attribute validSubLocales { text }?
+percentFormats =
+  element percentFormats {
+	attlist.percentFormats,
+	(alias | (\default*, percentFormatLength*, special*))
+  }
+attlist.percentFormats &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.percentFormats &= attribute validSubLocales { text }?
+attlist.percentFormats &= attribute numberSystem { text }?
+percentFormatLength =
+  element percentFormatLength {
+	attlist.percentFormatLength,
+	(alias | (\default*, percentFormat*, special*))
+  }
+attlist.percentFormatLength &=
+  attribute type { "full" | "long" | "medium" | "short" }?
+attlist.percentFormatLength &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.percentFormatLength &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.percentFormatLength &= attribute references { text }?
+attlist.percentFormatLength &= attribute alt { xsd:NMTOKENS }?
+attlist.percentFormatLength &= attribute validSubLocales { text }?
+percentFormat =
+  element percentFormat {
+	attlist.percentFormat,
+	(alias | (pattern*, special*))
+  }
+attlist.percentFormat &=
+  [ a:defaultValue = "standard" ] attribute type { xsd:NMTOKEN }?
+attlist.percentFormat &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.percentFormat &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.percentFormat &= attribute references { text }?
+attlist.percentFormat &= attribute alt { xsd:NMTOKENS }?
+attlist.percentFormat &= attribute validSubLocales { text }?
+currencyFormats =
+  element currencyFormats {
+	attlist.currencyFormats,
+	(alias
+	 | (\default*,
+		currencySpacing*,
+		currencyFormatLength*,
+		unitPattern*,
+		special*))
+  }
+attlist.currencyFormats &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.currencyFormats &= attribute validSubLocales { text }?
+attlist.currencyFormats &= attribute numberSystem { text }?
+currencySpacing =
+  element currencySpacing {
+	attlist.currencySpacing,
+	(alias | (beforeCurrency*, afterCurrency*, special*))
+  }
+attlist.currencySpacing &= empty
+beforeCurrency =
+  element beforeCurrency {
+	attlist.beforeCurrency,
+	(alias | (currencyMatch*, surroundingMatch*, insertBetween*))
+  }
+attlist.beforeCurrency &= empty
+afterCurrency =
+  element afterCurrency {
+	attlist.afterCurrency,
+	(alias | (currencyMatch*, surroundingMatch*, insertBetween*))
+  }
+attlist.afterCurrency &= empty
+surroundingMatch =
+  element surroundingMatch { attlist.surroundingMatch, text }
+attlist.surroundingMatch &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.surroundingMatch &= attribute alt { xsd:NMTOKENS }?
+attlist.surroundingMatch &= attribute references { text }?
+currencyMatch = element currencyMatch { attlist.currencyMatch, text }
+attlist.currencyMatch &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.currencyMatch &= attribute alt { xsd:NMTOKENS }?
+attlist.currencyMatch &= attribute references { text }?
+insertBetween = element insertBetween { attlist.insertBetween, text }
+attlist.insertBetween &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.insertBetween &= attribute alt { xsd:NMTOKENS }?
+attlist.insertBetween &= attribute references { text }?
+currencyFormatLength =
+  element currencyFormatLength {
+	attlist.currencyFormatLength,
+	(alias | (\default*, currencyFormat*, special*))
+  }
+attlist.currencyFormatLength &=
+  attribute type { "full" | "long" | "medium" | "short" }?
+attlist.currencyFormatLength &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.currencyFormatLength &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.currencyFormatLength &= attribute references { text }?
+attlist.currencyFormatLength &= attribute alt { xsd:NMTOKENS }?
+attlist.currencyFormatLength &= attribute validSubLocales { text }?
+currencyFormat =
+  element currencyFormat {
+	attlist.currencyFormat,
+	(alias | (pattern*, special*))
+  }
+attlist.currencyFormat &=
+  [ a:defaultValue = "standard" ] attribute type { xsd:NMTOKEN }?
+attlist.currencyFormat &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.currencyFormat &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.currencyFormat &= attribute references { text }?
+attlist.currencyFormat &= attribute alt { xsd:NMTOKENS }?
+attlist.currencyFormat &= attribute validSubLocales { text }?
+attlist.currencyFormat &= attribute numberSystem { text }?
+currencies =
+  element currencies {
+	attlist.currencies,
+	(alias | (\default?, currency*, special*))
+  }
+attlist.currencies &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.currencies &= attribute validSubLocales { text }?
+currency =
+  element currency {
+	attlist.currency,
+	(alias
+	 | (((pattern+, displayName*, symbol*)
+		 | (displayName+, symbol*, pattern*)
+		 | (symbol+, pattern*))?,
+		decimal*,
+		group*,
+		special*))
+  }
+# warning: pattern appears twice in the above. The first is for consistency with all other cases of
+# pattern + displayName; the second is for backwards compatibility
+attlist.currency &=
+  [ a:defaultValue = "standard" ] attribute type { xsd:NMTOKEN }?
+attlist.currency &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.currency &= attribute references { text }?
+attlist.currency &= attribute alt { xsd:NMTOKENS }?
+attlist.currency &= attribute validSubLocales { text }?
+symbol = element symbol { attlist.symbol, text }
+attlist.symbol &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.symbol &= attribute references { text }?
+attlist.symbol &= attribute alt { xsd:NMTOKENS }?
+attlist.symbol &= attribute choice { "true" | "false" }?
+# #########################################################
+units =
+  element units {
+	attlist.units,
+	(alias | (unit*, special*))
+  }
+attlist.units &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+attlist.units &= attribute references { text }?
+attlist.units &= attribute alt { xsd:NMTOKENS }?
+attlist.units &= attribute validSubLocales { text }?
+unit =
+  element unit {
+	attlist.unit,
+	(alias | (unitPattern*, special*))
+  }
+attlist.unit &= attribute type { xsd:NMTOKEN }
+attlist.unit &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+attlist.unit &= attribute references { text }?
+attlist.unit &= attribute alt { xsd:NMTOKENS }?
+attlist.unit &= attribute validSubLocales { text }?
+unitPattern = element unitPattern { attlist.unitPattern, text }
+attlist.unitPattern &=
+  attribute count { "zero" | "one" | "two" | "few" | "many" | "other" }
+attlist.unitPattern &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+attlist.unitPattern &= attribute references { text }?
+attlist.unitPattern &= attribute alt { xsd:NMTOKENS }?
+attlist.unitPattern &= attribute validSubLocales { text }?
+listPatterns =
+  element listPatterns {
+	attlist.listPatterns,
+	(alias | (listPattern*, special*))
+  }
+attlist.listPatterns &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+attlist.listPatterns &= attribute references { text }?
+attlist.listPatterns &= attribute alt { xsd:NMTOKENS }?
+attlist.listPatterns &= attribute validSubLocales { text }?
+listPattern =
+  element listPattern {
+	attlist.listPattern,
+	(alias | (listPatternPart*, special*))
+  }
+attlist.listPattern &= attribute type { "NMTOKEN" }?
+attlist.listPattern &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+attlist.listPattern &= attribute references { text }?
+attlist.listPattern &= attribute alt { xsd:NMTOKENS }?
+attlist.listPattern &= attribute validSubLocales { text }?
+listPatternPart =
+  element listPatternPart { attlist.listPatternPart, text }
+attlist.listPatternPart &=
+  attribute type { "start" | "middle" | "end" | "2" | "3" }
+attlist.listPatternPart &=
+  attribute draft {
+	"approved" | "contributed" | "provisional" | "unconfirmed"
+  }?
+attlist.listPatternPart &= attribute references { text }?
+attlist.listPatternPart &= attribute alt { xsd:NMTOKENS }?
+attlist.listPatternPart &= attribute validSubLocales { text }?
+# #########################################################
+collations =
+  element collations {
+	attlist.collations,
+	(alias | (\default*, collation*, special*))
+  }
+attlist.collations &= attribute version { xsd:NMTOKEN }?
+attlist.collations &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.collations &= attribute validSubLocales { text }?
+collation =
+  element collation {
+	attlist.collation,
+	(alias
+	 | (base?,
+		settings?,
+		suppress_contractions?,
+		optimize?,
+		rules?,
+		special*))
+  }
+attlist.collation &=
+  [ a:defaultValue = "standard" ] attribute type { xsd:NMTOKEN }?
+attlist.collation &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.collation &= attribute standard { text }?
+# the "standard" attribute is deprecated everywhere.
+attlist.collation &= attribute references { text }?
+attlist.collation &= attribute alt { xsd:NMTOKENS }?
+attlist.collation &= attribute validSubLocales { text }?
+base = element base { attlist.base, (alias | special) }
+attlist.base &= empty
+settings = element settings { attlist.settings, special* }
+attlist.settings &=
+  attribute strength {
+	"primary" | "secondary" | "tertiary" | "quaternary" | "identical"
+  }?
+attlist.settings &= attribute alternate { "non-ignorable" | "shifted" }?
+attlist.settings &= attribute backwards { "on" | "off" }?
+attlist.settings &= attribute normalization { "on" | "off" }?
+attlist.settings &= attribute caseLevel { "on" | "off" }?
+attlist.settings &= attribute caseFirst { "upper" | "lower" | "off" }?
+attlist.settings &= attribute hiraganaQuarternary { "on" | "off" }?
+attlist.settings &= attribute hiraganaQuaternary { "on" | "off" }?
+attlist.settings &= attribute numeric { "on" | "off" }?
+attlist.settings &= attribute variableTop { text }?
+suppress_contractions =
+  element suppress_contractions {
+	attlist.suppress_contractions, (text | cp)*
+  }
+attlist.suppress_contractions &= empty
+optimize = element optimize { attlist.optimize, (text | cp)* }
+attlist.optimize &= empty
+rules =
+  element rules {
+	attlist.rules,
+	(alias
+	 | (reset,
+		(reset | import | p | pc | s | sc | t | tc | i | ic | x)*))
+  }
+attlist.rules &= empty
+reset =
+  element reset {
+	attlist.reset,
+	(text
+	 | cp
+	 | first_variable
+	 | last_variable
+	 | first_tertiary_ignorable
+	 | last_tertiary_ignorable
+	 | first_secondary_ignorable
+	 | last_secondary_ignorable
+	 | first_primary_ignorable
+	 | last_primary_ignorable
+	 | first_non_ignorable
+	 | last_non_ignorable
+	 | first_trailing
+	 | last_trailing)*
+  }
+attlist.reset &= attribute before { xsd:NMTOKEN }?
+import = element import { attlist.import, empty }
+attlist.import &= attribute source { text }
+attlist.import &= attribute type { text }?
+p = element p { attlist.p, (text | cp | last_variable)* }
+attlist.p &= empty
+pc = element pc { attlist.pc, (text | cp | last_variable)* }
+attlist.pc &= empty
+s = element s { attlist.s, (text | cp | last_variable)* }
+attlist.s &= empty
+sc = element sc { attlist.sc, (text | cp | last_variable)* }
+attlist.sc &= empty
+t = element t { attlist.t, (text | cp | last_variable)* }
+attlist.t &= empty
+tc = element tc { attlist.tc, (text | cp | last_variable)* }
+attlist.tc &= empty
+i = element i { attlist.i, (text | cp | last_variable)* }
+attlist.i &= empty
+ic = element ic { attlist.ic, (text | cp | last_variable)* }
+attlist.ic &= empty
+x =
+  element x {
+	attlist.x, context?, (p | pc | s | sc | t | tc | i | ic)*, extend?
+  }
+attlist.x &= empty
+extend = element extend { attlist.extend, (text | cp)* }
+attlist.extend &= empty
+context = element context { attlist.context, (text | cp)* }
+attlist.context &= empty
+first_variable =
+  element first_variable { attlist.first_variable, empty }
+attlist.first_variable &= empty
+last_variable = element last_variable { attlist.last_variable, empty }
+attlist.last_variable &= empty
+first_tertiary_ignorable =
+  element first_tertiary_ignorable {
+	attlist.first_tertiary_ignorable, empty
+  }
+attlist.first_tertiary_ignorable &= empty
+last_tertiary_ignorable =
+  element last_tertiary_ignorable {
+	attlist.last_tertiary_ignorable, empty
+  }
+attlist.last_tertiary_ignorable &= empty
+first_secondary_ignorable =
+  element first_secondary_ignorable {
+	attlist.first_secondary_ignorable, empty
+  }
+attlist.first_secondary_ignorable &= empty
+last_secondary_ignorable =
+  element last_secondary_ignorable {
+	attlist.last_secondary_ignorable, empty
+  }
+attlist.last_secondary_ignorable &= empty
+first_primary_ignorable =
+  element first_primary_ignorable {
+	attlist.first_primary_ignorable, empty
+  }
+attlist.first_primary_ignorable &= empty
+last_primary_ignorable =
+  element last_primary_ignorable {
+	attlist.last_primary_ignorable, empty
+  }
+attlist.last_primary_ignorable &= empty
+first_non_ignorable =
+  element first_non_ignorable { attlist.first_non_ignorable, empty }
+attlist.first_non_ignorable &= empty
+last_non_ignorable =
+  element last_non_ignorable { attlist.last_non_ignorable, empty }
+attlist.last_non_ignorable &= empty
+first_trailing =
+  element first_trailing { attlist.first_trailing, empty }
+attlist.first_trailing &= empty
+last_trailing = element last_trailing { attlist.last_trailing, empty }
+attlist.last_trailing &= empty
+# #########################################################
+posix =
+  element posix {
+	attlist.posix,
+	(alias | (messages*, special*))
+  }
+attlist.posix &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.posix &= attribute references { text }?
+attlist.posix &= attribute validSubLocales { text }?
+messages =
+  element messages {
+	attlist.messages,
+	(alias | (yesstr*, nostr*, yesexpr*, noexpr*))
+  }
+attlist.messages &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.messages &= attribute references { text }?
+attlist.messages &= attribute alt { xsd:NMTOKENS }?
+attlist.messages &= attribute validSubLocales { text }?
+yesstr = element yesstr { attlist.yesstr, text }
+attlist.yesstr &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.yesstr &= attribute references { text }?
+attlist.yesstr &= attribute alt { xsd:NMTOKENS }?
+nostr = element nostr { attlist.nostr, text }
+attlist.nostr &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.nostr &= attribute references { text }?
+attlist.nostr &= attribute alt { xsd:NMTOKENS }?
+# START_DEPRECATED
+yesexpr = element yesexpr { attlist.yesexpr, text }
+attlist.yesexpr &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.yesexpr &= attribute references { text }?
+attlist.yesexpr &= attribute alt { xsd:NMTOKENS }?
+noexpr = element noexpr { attlist.noexpr, text }
+attlist.noexpr &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.noexpr &= attribute references { text }?
+attlist.noexpr &= attribute alt { xsd:NMTOKENS }?
+# END_DEPRECATED
+segmentations =
+  element segmentations {
+	attlist.segmentations, (alias | segmentation*)
+  }
+attlist.segmentations &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.segmentations &= attribute alt { xsd:NMTOKENS }?
+attlist.segmentations &= attribute validSubLocales { text }?
+attlist.segmentations &= attribute references { text }?
+segmentation =
+  element segmentation {
+	attlist.segmentation,
+	(alias | (variables?, segmentRules?) | special*)
+  }
+attlist.segmentation &= attribute type { xsd:NMTOKEN }
+attlist.segmentation &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.segmentation &= attribute alt { xsd:NMTOKENS }?
+attlist.segmentation &= attribute validSubLocales { text }?
+attlist.segmentation &= attribute references { text }?
+variables = element variables { attlist.variables, (alias | variable*) }
+attlist.variables &= empty
+variable = element variable { attlist.variable, text }
+attlist.variable &= attribute id { text }
+attlist.variable &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.variable &= attribute alt { xsd:NMTOKENS }?
+attlist.variable &= attribute references { text }?
+segmentRules =
+  element segmentRules { attlist.segmentRules, (alias | rule*) }
+attlist.segmentRules &= empty
+rule = element rule { attlist.rule, text }
+attlist.rule &= attribute id { xsd:NMTOKEN }
+attlist.rule &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.rule &= attribute alt { xsd:NMTOKENS }?
+attlist.rule &= attribute references { text }?
+rbnf = element rbnf { attlist.rbnf, (alias | rulesetGrouping*) }
+attlist.rbnf &= empty
+rulesetGrouping =
+  element rulesetGrouping {
+	attlist.rulesetGrouping, (alias | ruleset*)
+  }
+attlist.rulesetGrouping &= attribute type { xsd:NMTOKEN }
+attlist.rulesetGrouping &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+ruleset = element ruleset { attlist.ruleset, (alias | rbnfrule*) }
+attlist.ruleset &= attribute type { xsd:NMTOKEN }
+attlist.ruleset &= attribute access { "public" | "private" }?
+attlist.ruleset &= attribute allowsParsing { "true" | "false" }?
+attlist.ruleset &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+rbnfrule = element rbnfrule { attlist.rbnfrule, text }
+attlist.rbnfrule &= attribute value { text }
+attlist.rbnfrule &= attribute radix { text }?
+attlist.rbnfrule &= attribute decexp { text }?
+attlist.rbnfrule &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+references = element references { attlist.references, reference* }
+attlist.references &= empty
+reference = element reference { attlist.reference, text }
+attlist.reference &= attribute type { xsd:NMTOKEN }
+attlist.reference &= attribute standard { "true" | "false" }?
+attlist.reference &= attribute uri { text }?
+attlist.reference &=
+  attribute draft {
+	"approved"
+	| "contributed"
+	| "provisional"
+	| "unconfirmed"
+	| "true"
+	| "false"
+  }?
+# true and false are deprecated.
+attlist.reference &= attribute alt { xsd:NMTOKENS }?
+start = ldml | usesMetazone
+any =
+  (element * {
+	 attribute * { text }*,
+	 any
+   }
+   | text)*

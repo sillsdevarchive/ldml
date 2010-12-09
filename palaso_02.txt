@@ -1,0 +1,173 @@
+= LDML Palaso NameSpace =
+
+== Introduction ==
+
+LDML is the core grammar used for representing data stored in the CLDR. LDML is an extenisble grammar and this allows us to add information that we need into data files for use in CLDR.
+
+This document describes the grammar extensions that the palaso namespace adds.
+
+----
+namespace palaso = "http://www.palaso.org/ldml/0.2"
+----
+
+The namespace URL.
+
+The grammar starts by including the standard LDML grammar and modifying it to hook the two special tags that elements in the namespace occur under.
+
+----
+include "ldml.rnc" {
+	collation = element collation {
+		attlist.collation,
+	   (alias
+		 | (base?,
+			settings?,
+			suppress_contractions?,
+			optimize?,
+			rules?,
+			collation.special?))        <1>
+	}
+	ldml = element ldml {
+		attlist.ldml,
+		identity,
+		(alias
+		 | (fallback*,
+			localeDisplayNames?,
+			layout?,
+			characters?,
+			delimiters?,
+			measurement?,
+			dates?,
+			numbers?,
+			units?,
+			listPatterns?,
+			collations?,
+			posix?,
+			segmentations?,
+			rbnf?,
+			references?,
+			ldml.special*))     <1>
+	}
+}
+----
+
+<1> The default special is replaced with context specific definitions
+
+== Collation ==
+
+LDML currently has only one descriptive language for collations. But collations may be described in various
+languages and then converted into the ICU based language. The LDML document wants to hold both the original
+source representation of the sort order, for user editing, and the ICU representation.
+
+----
+attlist.collation.special &=
+	attribute palaso:sortRulesType {
+		"preprocessed"
+	}
+
+
+collation.special =
+	element special {
+		attlist.collation.special,
+	   (collation.special.preprocessed)
+	}
+----
+
+Currently there is one representational languages for collation orders.
+
+preprocessed::
+	This adds a preprocessing layer to the collation order for complex collation orders.
+
+----
+collation.special.preprocess =
+   (palaso.reorder*,
+	base?,
+	settings?,
+	suppress_contractions?,
+	optimize?,
+	rules?)
+
+palaso.reorder =
+	element palaso:reorder {
+		attlist.palaso.reorder
+	}
+
+attlist.palaso.reorder &= attribute palaso:match { text }
+attlist.palaso.reorder &= attribute palaso:reorder { text }
+----
+
+Preprocessed collation adds a single element type to the default LDML collation language. The `palaso:reorder`
+element describes a preprocessing step that matches on a regular expression, and using components of that
+regular expression, generates an output string that will be used for the actual collation. Multiple reorder
+elements may exist. The only requirement is that the input regular expressions be non-overlapping. That is
+two reorder match expressions may not match the same string.
+
+The regular expression language used in `palaso:match` is a restricted language based on Perl/Python syntax. The following regular expression language elements are allowed:
+
+* `[]` class matching
+* `{`'n','m'`}` range matching
+* `?` optional match
+* `()` grouping which may be referenced in the reorder attribute
+* `|` alternation
+* 'ab' sequence
+* 'a' character
+
+Within the `palaso:reorder` attribute, the following elements may occur:
+
+* 'a' character
+* `\`'n' group reference
+
+Not all matched groups need to be referenced.
+
+
+== General ==
+
+----
+ldml.special =
+	element special {
+	   (palaso.fonts?,
+		palaso.kbds?,
+		palaso.spellcheck?)
+	}
+----
+
+----
+palaso.spellcheck =
+	element palaso:spellCheckingId {
+		attribute value { xsd:anyURI }
+	}
+----
+
+----
+palaso.fonts =
+	element palaso:fonts {
+		(palaso.font*)
+	}
+
+palaso.font =
+	element palaso:font {
+		attlist.palaso.font
+	}
+
+attlist.palaso.font &= attribute palaso:name { text }
+attlist.palaso.font &= attribute palaso:url { xsd:anyURI }
+attlist.palaso.font &= attribute palaso:size { xsd:decimal }
+attlist.palaso.font &= attribute palaso:minversion { xsd:decimal }
+----
+
+----
+palaso.kbds =
+	element palaso:keyboards {
+		(palaso.kbd*)
+	}
+
+palaso.kbd =
+	element palaso:keyboard {
+		attlist.palaso.kbd
+	}
+
+attlist.palaso.kbd &= attribute palaso:name { text }
+attlist.palaso.kbd &= attribute palaso:type {
+	"keyman" | "msklc"
+}
+attlist.palaso.kbd &= attribute palaso:url { xsd:anyURI }
+----

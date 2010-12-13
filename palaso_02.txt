@@ -104,23 +104,12 @@ elements may exist. The only requirement is that the input regular expressions b
 two reorder match expressions may not match the same string.
 
 palaso:match::
-	The regular expression language used in `palaso:match` is a restricted language based on Perl/Python syntax. The following regular expression language elements are allowed:
-
-	* `[]` class matching
-	* `{`'n','m'`}` range matching
-	* `?` optional match
-	* `()` grouping which may be referenced in the reorder attribute
-	* `|` alternation
-	* 'ab' sequence
-	* 'a' character
+	The regular expression language used in `palaso:match` uses the restricted
+regular expression language described later.
 
 palaso:reorder::
-	Within the `palaso:reorder` attribute, the following elements may occur:
-
-	* 'a' character
-	* `\`'n' group reference
-
-	Not all matched groups need to be referenced.
+	The `palaso:reorder` attribute is a corresponding transformation string to
+`palaso:match`.
 
 
 == General ==
@@ -136,7 +125,9 @@ ldml.special =
 	}
 ----
 
-
+Most of the general information regarding a writing system in the palaso
+namespace is related to finding source files pertinent to various text
+processing functions.
 
 ----
 palaso.spellcheck =
@@ -146,7 +137,8 @@ palaso.spellcheck =
 ----
 
 value::
-	Specifies the URL reference to the spellchecking module.
+	This holds a URI reference to the spell checking module to use. Ideally
+	this should be a URL reference to a source module for spell checking.
 
 ----
 palaso.fonts =
@@ -168,7 +160,7 @@ attlist.palaso.font &= attribute palaso:minversion { xsd:decimal }
 palaso:name::
 	Internal public font name that an application may use to reference the font to the operating system.
 palaso::url::
-	Location of the font whether local .ttf or external .woff.
+	Location of the font whether local `.ttf` or external `.woff`.
 palaso:size::
 	Relative size from Times New Roman, e.g. 1.6 for an older Thai font.
 palaso:minversion::
@@ -182,14 +174,15 @@ palaso.kbds =
 
 palaso.kbd =
 	element palaso:keyboard {
-		attlist.palaso.kbd
+		attlist.palaso.kbd,
+		(palaso.kbdrule*)
 	}
 
 attlist.palaso.kbd &= attribute palaso:name { text }
 attlist.palaso.kbd &= attribute palaso:type {
 	"keyman" | "msklc"
-}
-attlist.palaso.kbd &= attribute palaso:url { xsd:anyURI }
+}?
+attlist.palaso.kbd &= attribute palaso:url { xsd:anyURI }?
 ----
 
 palaso:name::
@@ -202,3 +195,181 @@ palaso:type::
 		The `palaso:url` references a .klc source file
 palaso:url::
 	Reference to the source file for this keyboard.
+
+----
+attlist.palaso.kbd &= attribute palaso:mnemonic { xsd:boolean }?
+
+palaso.kbdrule =
+	element palaso.rule {
+		attlist.palaso.rule
+	}
+
+attlist.palaso.rule &= attribute palaso:input { text }?
+attlist.palaso.rule &= attribute palaso:output { text }?
+attlist.palaso.rule &= attribute palaso:key { text }?
+attlist.palaso.rule &= attribute palaso:deadin { xsd:integer }?
+attlist.palaso.rule &= attribute palaso:deadin { xsd:integer }?
+attlist.palaso.rule &= attribute palaso:error { xsd:boolean }?
+----
+
+The palaso namespace also has the ability to include a formal description of a keyboard layout. The underlying processing model represented by this description follows that of Keyman footnote:[Tavultesoft Keyman http://tavultesoft.com/keyman]. Although the language has been simplified and made to fit more naturally with existing tools such as regular expressions.
+
+The basic principle is that a key pressed in the context of some previous output, known as the context and represented in the `input` attribute of a `rule`, replaces that context with some new output. The output may make reference to subpatterns matched in the context. Keys are described in terms of the standard en_US keyboard layout. A mapping of key names to virtual keys in various systems is available. Virtual key names may also be used. These are used when combining key names with modifiers such as 'alt' or 'shift'. The full set of modifiers is:
+
+....
+LShift
+LCtrl
+LAlt
+RShift
+RCtrl
+RAlt
+AltGr        = RAlt
+Shift        = LShift + RShift
+Ctrl         = LCtrl + RCtrl
+Alt          = LAlt + RAlt
+....
+
+These modifiers may be combined with virtual key identifiers within []. For example `[Shift RCtrl K_A]`. This table lists the complete mapping between the standard US English characters and the virtual keys associated with them.
+
+[width="50%",options="header"]
+|===========================
+|Virtual Key|Unshifted|Shift
+|K_BKQUOTE  | `       | ~
+|K_1        | 1       | !
+|K_2        | 2       | @
+|K_3        | 3       | #
+|K_4        | 4       | $
+|K_5        | 5       | %
+|K_6        | 6       | ^
+|K_7        | 7       | &
+|K_8        | 8       | *
+|K_9        | 9       | (
+|K_HYPHEN   | -       | _
+|K_EQUAL    | =       | `+`
+|K_BKSP     |         |
+|K_TAB      |         |
+|K_Q        | q       | Q
+|K_W        | w       | W
+|K_E        | e       | E
+|K_R        | r       | R
+|K_T        | t       | T
+|K_Y        | y       | Y
+|K_I        | i       | I
+|K_O        | o       | O
+|K_P        | p       | P
+|K_LBRKT    | [       | {
+|K_RBRKT    | ]       | }
+|K_A        | a       | A
+|K_S        | s       | S
+|K_D        | d       | D
+|K_F        | f       | F
+|K_G        | g       | G
+|K_H        | h       | H
+|K_J        | j       | J
+|K_K        | k       | K
+|K_L        | l       | L
+|K_COLON    | ;       | :
+|K_QUOTE    | '       | "
+|K_ENTER    |         |
+|K_Z        | z       | Z
+|K_X        | x       | X
+|K_C        | c       | C
+|K_V        | v       | V
+|K_B        | b       | B
+|K_N        | n       | N
+|K_M        | m       | M
+|K_COMMA    | ,       | <
+|K_PERIOD   | .       | >
+|K_SLASH    | /       | ?
+|K_BKSLASH  | \       | \|
+|K_SPACE    |         |
+|===========================
+
+Other keys on an extended keyboard are:
+
+....
+K_PAUSE, K_SCROLL, K_SNAPSHOT, K_ESC, K_LEFT, K_UP, K_RIGHT, K_DOWN,
+K_PGUP, K_PGDN, K_HOME, K_END, K_INS, K_DEL,
+K_NUMLOCK, K_NPSLASH, K_NPSTAR, K_NPMINUS,
+K_NP7, K_NP8, K_NP9,
+K_NP4, K_NP5, K_NP6, K_NPPLUS,
+K_NP1, K_NP2, K_NP3,
+K_NP0, K_NPDOT,
+K_F1 .. K_F24,
+K_LWIN, K_RWIN, K_APP, K_oE2
+....
+
+In addition, the description supports a deadkey number as both input context and being set on output. Also a key in a context may result in an error state where some way of indicating such an error should be made to the user, either via a system beep or some other indication.
+
+palaso:mnemonic::
+	This is an attribute on the `palaso:kbd` to indicate that the layout is
+described in terms of the labels on the keys the typist has on their keyboard.
+Thus if a user is using a French AZERTY layout with the A key in a different
+position to where it is on a US English keyboard, then the key value of "a"
+represents that new A position on the AZERTY layout rather than its original
+key on a US English keyboard. If this attribute is not set, then the keyboard
+is assumed to be positional, which means that regardless of what layout the user
+is working with the A key will always be interpretted as the key whose keytop
+is A in US English layout.
+
+palaso:input::
+	This is the input context regular expression which uses a restricted regular expression language as described in a later section of this document. This attribute is optional.
+
+palaso:output::
+	This is the output string to replace the input context with when the key is pressed. The string is interpretted as a transform string as per the restricted regular expression language in relation to the `palaso:input` regular expression match. If absent, the output is empty and so the context is deleted. If there
+is also no context, then the key is, in effect, ignored.
+
+palaso:key::
+	This specifies the key press against which tests are made. Rules are
+searched for a key in terms of length of context. The longest context is tested
+first and once a context matches, that rule is run and no othe rule is run for
+that keypress. If there are rules with no key attribute, these are tested in
+context length order to see if one matches, after the keypress rule is run.
+
+palaso:deadin::
+	If this attribute exists, the rule is further constrained to only fire if
+the given deadkey is active.
+
+palaso:deadout::
+	This sets the given deadkey to active if this rule first (the key and input
+match). A deadkey is only active for the next keystroke, whether or not it is
+matched.
+
+palaso:error::
+	This indicates that pressing the given key in the given input context should
+result in some error indication.
+
+== Regular Expressions ==
+
+In dealing with character level data it is common to work with a limited window
+for processing text or to even transform regular expressions into other forms.
+For this reason, the regular expression language used in LDML is a restricted
+regular expression language. In particular it does not allow klein * or +. Thus
+all such regular expression have a predeterminable maximum and minimum length
+of string matched.
+
+For greater processability the restricted regular expression language is limited to:
+
+	* `[]` class matching
+	* `{`'n','m'`}` range matching
+	* `?` optional match
+	* `()` grouping which may be referenced in the reorder attribute
+	* `|` alternation
+	* 'ab' sequence
+	* 'a' character
+	* `.` any character
+
+As a result the following characters need to be escaped with a preceding `\`
+
+....
+[ ] { ( ) ? | . \
+....
+
+In many cases such a regular expression is used to match a string which is then
+transformed in relation to that regular expression. Such transformation strings
+may use the following elements:
+
+	* 'a' character
+	* `\`'n' group reference
+
+Not all matched groups need to be referenced.

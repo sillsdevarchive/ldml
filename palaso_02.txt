@@ -4,7 +4,7 @@
 
 LDML is the core grammar used for representing data stored in the CLDR. LDML is an extenisble grammar and this allows us to add information that we need into data files for use in CLDR.
 
-This document describes the grammar extensions that the palaso namespace adds.
+This document describes the grammar extensions that the palaso namespace adds using Relax NG compressed grammar.
 
 ----
 namespace palaso = "http://www.palaso.org/ldml/0.2"
@@ -74,8 +74,10 @@ collation.special =
 
 Currently there is one representational languages for collation orders.
 
-preprocessed::
-	This adds a preprocessing layer to the collation order for complex collation orders.
+palaso:sortRulesType::
+	This specifies the representational language for the collation order.
+	preprocessed:::
+		This adds a preprocessing layer to the collation order for complex collation orders.
 
 ----
 collation.special.preprocess =
@@ -101,25 +103,29 @@ regular expression, generates an output string that will be used for the actual 
 elements may exist. The only requirement is that the input regular expressions be non-overlapping. That is
 two reorder match expressions may not match the same string.
 
-The regular expression language used in `palaso:match` is a restricted language based on Perl/Python syntax. The following regular expression language elements are allowed:
+palaso:match::
+	The regular expression language used in `palaso:match` is a restricted language based on Perl/Python syntax. The following regular expression language elements are allowed:
 
-* `[]` class matching
-* `{`'n','m'`}` range matching
-* `?` optional match
-* `()` grouping which may be referenced in the reorder attribute
-* `|` alternation
-* 'ab' sequence
-* 'a' character
+	* `[]` class matching
+	* `{`'n','m'`}` range matching
+	* `?` optional match
+	* `()` grouping which may be referenced in the reorder attribute
+	* `|` alternation
+	* 'ab' sequence
+	* 'a' character
 
-Within the `palaso:reorder` attribute, the following elements may occur:
+palaso:reorder::
+	Within the `palaso:reorder` attribute, the following elements may occur:
 
-* 'a' character
-* `\`'n' group reference
+	* 'a' character
+	* `\`'n' group reference
 
-Not all matched groups need to be referenced.
+	Not all matched groups need to be referenced.
 
 
 == General ==
+
+Most of the information held in an LDML file is general in nature and this is where most of the extension information goes.
 
 ----
 ldml.special =
@@ -130,12 +136,17 @@ ldml.special =
 	}
 ----
 
+
+
 ----
 palaso.spellcheck =
 	element palaso:spellCheckingId {
 		attribute value { xsd:anyURI }
 	}
 ----
+
+value::
+	Specifies the URL reference to the spellchecking module.
 
 ----
 palaso.fonts =
@@ -154,6 +165,15 @@ attlist.palaso.font &= attribute palaso:size { xsd:decimal }
 attlist.palaso.font &= attribute palaso:minversion { xsd:decimal }
 ----
 
+palaso:name::
+	Internal public font name that an application may use to reference the font to the operating system.
+palaso::url::
+	Location of the font whether local .ttf or external .woff.
+palaso:size::
+	Relative size from Times New Roman, e.g. 1.6 for an older Thai font.
+palaso:minversion::
+	The minimum font version appropriate for use.
+
 ----
 palaso.kbds =
 	element palaso:keyboards {
@@ -171,3 +191,14 @@ attlist.palaso.kbd &= attribute palaso:type {
 }
 attlist.palaso.kbd &= attribute palaso:url { xsd:anyURI }
 ----
+
+palaso:name::
+	Keyboard name
+palaso:type::
+	Specifies which language the keyboard is in:
+	keyman:::
+		The `palaso:url` references a .kmn source file
+	msklc:::
+		The `palaso:url` references a .klc source file
+palaso:url::
+	Reference to the source file for this keyboard.

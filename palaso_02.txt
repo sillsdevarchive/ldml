@@ -2,9 +2,9 @@
 
 == Introduction ==
 
-LDML is the core grammar used for representing data stored in the CLDR. LDML is an extenisble grammar and this allows us to add information that we need into data files for use in CLDR.
+LDML is the core grammar used for representing data stored in the CLDR. LDML is an extensible grammar and this allows us to add information that we need into data files for use in CLDR.
 
-This document describes the grammar extensions that the palaso namespace adds using Relax NG compressed grammar.
+This document describes the grammar extensions that the palaso namespace adds using the RelaxNG compressed grammar language.
 
 ----
 namespace palaso = "http://www.palaso.org/ldml/0.2"
@@ -74,7 +74,7 @@ collation.special =
 
 Currently there is one representational languages for collation orders.
 
-palaso:sortRulesType::
+sortRulesType::
 	This specifies the representational language for the collation order.
 	preprocessed:::
 		This adds a preprocessing layer to the collation order for complex collation orders.
@@ -103,68 +103,105 @@ regular expression, generates an output string that will be used for the actual 
 elements may exist. The only requirement is that the input regular expressions be non-overlapping. That is
 two reorder match expressions may not match the same string.
 
-palaso:match::
-	The regular expression language used in `palaso:match` uses the restricted
+match::
+	The regular expression language used in `match` uses the restricted
 regular expression language described later.
 
-palaso:reorder::
-	The `palaso:reorder` attribute is a corresponding transformation string to
-`palaso:match`.
+reorder::
+	The `reorder` attribute is a corresponding transformation string to
+`match`.
 
 
-== General ==
+== External Resources ==
 
-Most of the information held in an LDML file is general in nature and this is where most of the extension information goes.
+At the top level there are two additions. Keyboards and external resources.
 
 ----
 ldml.special =
 	element special {
-	   (palaso.fonts?,
-		palaso.kbds?,
-		palaso.spellcheck?)
+	   (palaso.resources?,
+		palaso.kbds?)
+	}
+
+palaso.resources =
+	element palaso:external-resources {
+	   (palaso.spellcheck*,
+		palaso.font*,
+		palaso.kbdrsrc*)
 	}
 ----
 
-Most of the general information regarding a writing system in the palaso
-namespace is related to finding source files pertinent to various text
-processing functions.
+External resources are writing system level information that describe system resources that are useful for processing data in this writing system.
 
 ----
 palaso.spellcheck =
 	element palaso:spellCheckingId {
-		attribute value { xsd:anyURI }
+		attribute palaso:type { text }
+		attribute palaso:url { xsd:anyURI }
 	}
 ----
+Spell checking is more than a reference to a dictionary given that some spell checking engines handle morphology as well.
 
-value::
-	This holds a URI reference to the spell checking module to use. Ideally
-	this should be a URL reference to a source module for spell checking.
+type::
+	This specifies the type of spell checking engine that the `url` resource points to. Values are:
+	hunspell:::
+		The hunspell spell checking engine.
+url::
+	This holds a URI reference to the spell checking module to use according to the `type` attribute:
+	hunspell:::
+		Refers to a hunspell module.
 
 ----
-palaso.fonts =
-	element palaso:fonts {
-		(palaso.font*)
-	}
-
 palaso.font =
 	element palaso:font {
 		attlist.palaso.font
 	}
 
 attlist.palaso.font &= attribute palaso:name { text }
-attlist.palaso.font &= attribute palaso:url { xsd:anyURI }
-attlist.palaso.font &= attribute palaso:size { xsd:decimal }
-attlist.palaso.font &= attribute palaso:minversion { xsd:decimal }
+attlist.palaso.font &= attribute palaso:url { xsd:anyURI }?
+attlist.palaso.font &= attribute palaso:size { xsd:decimal }?
+attlist.palaso.font &= attribute palaso:minversion { xsd:decimal }?
 ----
 
-palaso:name::
+name::
 	Internal public font name that an application may use to reference the font to the operating system.
-palaso::url::
-	Location of the font whether local `.ttf` or external `.woff`.
-palaso:size::
-	Relative size from Times New Roman, e.g. 1.6 for an older Thai font.
-palaso:minversion::
+url::
+	Location of the font whether local `.ttf` or external `.woff`. This parameter is optional given that
+	the `name` attribute can be sufficient to locate the resource in many contexts.
+size::
+	Relative size from Times New Roman, e.g. 1.6 for an older Thai font. If unspecified, the value is 1.0.
+minversion::
 	The minimum font version appropriate for use.
+
+----
+palaso.kbdrsrc =
+	element palaso:kbd {
+		attrlist.palaso.kbdrsrc
+	}
+
+attlist.palaso.kbdrsrc &= attribute palaso:name { text }
+attlist.palaso.kbdrsrc &= attribute palaso:type {
+	"keyman" | "msklc"
+}?
+attlist.palaso.kbdrsrc &= attribute palaso:url { xsd:anyURI }?
+----
+
+name::
+	Keyboard name
+type::
+	Specifies which language the keyboard is in:
+	kmn:::
+		The `url` references a .kmn source file
+	keyman:::
+		The `url` references a .kmx compiled keyman file for use with Tavultesoft Keyman.
+	msklc:::
+		The `url` references a .klc source file
+url::
+	Reference to the source file for this keyboard.
+
+== Keyboards ==
+
+Keyboard descriptions are seemingly simple to express given the basic nature of a keytop and what it outputs when you press it. But many keyboards express more complex behaviour than this. For example, deadkeys are a mechanism to allow keysequences to be used to output a wider range of letters than a simple keyboard. There are also contextual keyboards where inplace editing allows a keyboard to change what has already been output. For example this is necessary when handling prevowels in some scripts which are stored following a consonant but are rendered and want to be keyed before that consonant.  Another type of keyboard is used for very large character sets and very often involves out of band editing of a string which is then accepted, along with a helper contextual picker to enable people to find the character they are after. All of these types of keyboard are handled by this language, although it is not optimised for large character sets.
 
 ----
 palaso.kbds =
@@ -179,24 +216,6 @@ palaso.kbd =
 	}
 
 attlist.palaso.kbd &= attribute palaso:name { text }
-attlist.palaso.kbd &= attribute palaso:type {
-	"keyman" | "msklc"
-}?
-attlist.palaso.kbd &= attribute palaso:url { xsd:anyURI }?
-----
-
-palaso:name::
-	Keyboard name
-palaso:type::
-	Specifies which language the keyboard is in:
-	keyman:::
-		The `palaso:url` references a .kmn source file
-	msklc:::
-		The `palaso:url` references a .klc source file
-palaso:url::
-	Reference to the source file for this keyboard.
-
-----
 attlist.palaso.kbd &= attribute palaso:mnemonic { xsd:boolean }?
 
 palaso.kbdrule =
@@ -212,7 +231,7 @@ attlist.palaso.rule &= attribute palaso:deadin { xsd:integer }?
 attlist.palaso.rule &= attribute palaso:error { xsd:boolean }?
 ----
 
-The palaso namespace also has the ability to include a formal description of a keyboard layout. The underlying processing model represented by this description follows that of Keyman footnote:[Tavultesoft Keyman http://tavultesoft.com/keyman]. Although the language has been simplified and made to fit more naturally with existing tools such as regular expressions.
+The underlying processing model used for keyboard description follows that of Keyman.footnote:[Tavultesoft Keyman http://tavultesoft.com/keyman] Although the language has been simplified and made to fit more naturally with existing tools such as regular expressions.
 
 The basic principle is that a key pressed in the context of some previous output, known as the context and represented in the `input` attribute of a `rule`, replaces that context with some new output. The output may make reference to subpatterns matched in the context. Keys are described in terms of the standard en_US keyboard layout. A mapping of key names to virtual keys in various systems is available. Virtual key names may also be used. These are used when combining key names with modifiers such as 'alt' or 'shift'. The full set of modifiers is:
 
@@ -301,7 +320,10 @@ K_LWIN, K_RWIN, K_APP, K_oE2
 
 In addition, the description supports a deadkey number as both input context and being set on output. Also a key in a context may result in an error state where some way of indicating such an error should be made to the user, either via a system beep or some other indication.
 
-palaso:mnemonic::
+name::
+	This is the unique identifier for this keyboard definition.
+
+mnemonic::
 	This is an attribute on the `palaso:kbd` to indicate that the layout is
 described in terms of the labels on the keys the typist has on their keyboard.
 Thus if a user is using a French AZERTY layout with the A key in a different
@@ -312,32 +334,33 @@ is assumed to be positional, which means that regardless of what layout the user
 is working with the A key will always be interpretted as the key whose keytop
 is A in US English layout.
 
-palaso:input::
+input::
 	This is the input context regular expression which uses a restricted regular expression language as described in a later section of this document. This attribute is optional.
 
-palaso:output::
+output::
 	This is the output string to replace the input context with when the key is pressed. The string is interpretted as a transform string as per the restricted regular expression language in relation to the `palaso:input` regular expression match. If absent, the output is empty and so the context is deleted. If there
 is also no context, then the key is, in effect, ignored.
 
-palaso:key::
+key::
 	This specifies the key press against which tests are made. Rules are
 searched for a key in terms of length of context. The longest context is tested
 first and once a context matches, that rule is run and no othe rule is run for
 that keypress. If there are rules with no key attribute, these are tested in
 context length order to see if one matches, after the keypress rule is run.
 
-palaso:deadin::
+deadin::
 	If this attribute exists, the rule is further constrained to only fire if
 the given deadkey is active.
 
-palaso:deadout::
-	This sets the given deadkey to active if this rule first (the key and input
+deadout::
+	This sets the given deadkey to active if this rule fires (the key and input
 match). A deadkey is only active for the next keystroke, whether or not it is
 matched.
 
-palaso:error::
+error::
 	This indicates that pressing the given key in the given input context should
 result in some error indication.
+
 
 == Regular Expressions ==
 

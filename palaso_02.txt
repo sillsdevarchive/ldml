@@ -129,15 +129,20 @@ palaso.resources =
 		palaso.font*,
 		palaso.kbdrsrc*)
 	}
+
+palaso.url =
+	element palaso:url {
+		(xsd:anyURI)
+	}
 ----
 
-External resources are writing system level information that describe system resources that are useful for processing data in this writing system.
+External resources are writing system level information that describe system resources that are useful for processing data in this writing system. The particular resource is referenced via a URL. What the URL actually references is context and type specific and is described where this element is used.
 
 ----
 palaso.spellcheck =
 	element palaso:spellCheckingId {
-		attribute palaso:type { text }
-		attribute palaso:url { xsd:anyURI }
+		attribute palaso:type { text },
+		(palaso.url+)
 	}
 ----
 Spell checking is more than a reference to a dictionary given that some spell checking engines handle morphology as well.
@@ -145,29 +150,24 @@ Spell checking is more than a reference to a dictionary given that some spell ch
 type::
 	This specifies the type of spell checking engine that the `url` resource points to. Values are:
 	hunspell:::
-		The hunspell spell checking engine.
-url::
-	This holds a URI reference to the spell checking module to use according to the `type` attribute:
-	hunspell:::
-		Refers to a hunspell module.
+		The hunspell spell checking engine. The `palaso:url` element references a hunspell module
 
 ----
 palaso.font =
 	element palaso:font {
-		attlist.palaso.font
+		attlist.palaso.font,
+		(palaso.url*)
 	}
 
 attlist.palaso.font &= attribute palaso:name { text }
-attlist.palaso.font &= attribute palaso:url { xsd:anyURI }?
 attlist.palaso.font &= attribute palaso:size { xsd:decimal }?
 attlist.palaso.font &= attribute palaso:minversion { xsd:decimal }?
 ----
 
+The urls reference font resources either as `.ttf` or `.woff` files.
+
 name::
 	Internal public font name that an application may use to reference the font to the operating system.
-url::
-	Location of the font whether local `.ttf` or external `.woff`. This parameter is optional given that
-	the `name` attribute can be sufficient to locate the resource in many contexts.
 size::
 	Relative size from Times New Roman, e.g. 1.6 for an older Thai font. If unspecified, the value is 1.0.
 minversion::
@@ -176,14 +176,14 @@ minversion::
 ----
 palaso.kbdrsrc =
 	element palaso:kbd {
-		attrlist.palaso.kbdrsrc
+		attrlist.palaso.kbdrsrc,
+		(palaso.url+)
 	}
 
 attlist.palaso.kbdrsrc &= attribute palaso:name { text }
 attlist.palaso.kbdrsrc &= attribute palaso:type {
 	"keyman" | "msklc"
 }?
-attlist.palaso.kbdrsrc &= attribute palaso:url { xsd:anyURI }?
 ----
 
 name::
@@ -196,8 +196,6 @@ type::
 		The `url` references a .kmx compiled keyman file for use with Tavultesoft Keyman.
 	msklc:::
 		The `url` references a .klc source file
-url::
-	Reference to the source file for this keyboard.
 
 == Keyboards ==
 
